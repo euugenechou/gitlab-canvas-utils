@@ -12,6 +12,10 @@ If the repo was already cloned, then it is pulled.
 
 .SH OPTIONS
 .TP
+.BR -h ", " --help
+display program help and usage
+
+.TP
 .BR -c " " CSV ", " --csv=CSV
 specify the path to the CSV containing the repos to clone (default:
 \fBstdin\fP).
@@ -31,6 +35,8 @@ output the CSV rows for the students whose repos were cloned/pulled to
 specify the \fBstderr\fP logging level (choices:
 \fBdebug\fP, \fBinfo\fP, \fBwarning\fP, \fBerror\fP, \fBcritical\fP).
 
-.TP
-.BR -h ", " --help
-display program help and usage
+.SH SEE ALSO
+addtoresources(1),
+checkout(1),
+createrepos(1),
+roster(1)

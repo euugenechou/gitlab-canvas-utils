@@ -12,9 +12,13 @@ Checks out cloned student repos to given commit IDs using a CSV produced by
 
 .SH OPTIONS
 .TP
-.BR -a " " ASGN ", " --asgn=ASGN
+.BR -h ", " --help
+display program help and usage
+
+.TP
+.BR -a " " ASGN ", " --asgn=ASGN " " (required argument)
 specify the number of the assignment to checkout repos for, using commit IDs
-scraped from Canvas.
+scraped from Canvas (\fBthis is required\fP).
 
 .TP
 .BR -c " " CSV ", " --csv=CSV
@@ -29,8 +33,10 @@ specify the \fBstderr\fP logging level (choices:
 .TP
 .BR -r " " REPODIR ", " --repodir=REPODIR
 specify the directory that contains the cloned repos (default:
-\fB/tmp/repos\fP).\fP
+\fB/tmp/repos\fP).
 
-.TP
-.BR -h ", " --help
-display program help and usage
+.SH SEE ALSO
+addtoresources(1),
+clone(1),
+createrepos(1),
+roster(1)
