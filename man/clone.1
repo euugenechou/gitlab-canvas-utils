@@ -1,0 +1,36 @@
+.TH clone 1 "" "" gitlab-canvas-utils
+
+.SH NAME
+clone - Clone student GitLab repos
+
+.SH SYNOPSIS
+.B clone [OPTIONS]
+
+.SH DESCRIPTION
+Clones student repos specified using a CSV produced by \fBroster\fP.
+If the repo was already cloned, then it is pulled.
+
+.SH OPTIONS
+.TP
+.BR -c " " CSV ", " --csv=CSV
+specify the path to the CSV containing the repos to clone (default:
+\fBstdin\fP).
+
+.TP
+.BR -r " " REPODIR ", " --repodir=REPODIR
+specify the directory that contains the cloned repos (default:
+\fB/tmp/repos\fP).\fP
+
+.TP
+.BR -f ", " --forward
+output the CSV rows for the students whose repos were cloned/pulled to
+\fBstdout\fP.
+
+.TP
+.BR -l " " LEVEL ", " --logging-level=LEVEL
+specify the \fBstderr\fP logging level (choices:
+\fBdebug\fP, \fBinfo\fP, \fBwarning\fP, \fBerror\fP, \fBcritical\fP).
+
+.TP
+.BR -h ", " --help
+display program help and usage
