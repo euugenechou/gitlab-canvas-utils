@@ -32,6 +32,9 @@ fi
 # Explicit copy so changes are copied in, if any were made.
 cp man/* $HOME/.config/guc/man/man1/.
 
+# Some of the scripts have special Python packages that need to be installed.
+python3 -m pip install -r requirements.txt
+
 echo "Installation complete."
 echo "To add the scripts to your \$PATH, run:"
 echo " $ export PATH=\$PATH:\$HOME/.config/guc/scripts"
