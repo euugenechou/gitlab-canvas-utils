@@ -1,0 +1,40 @@
+.TH roster 0 "" "" gitlab-canvas-utils
+
+.SH NAME
+roster - Scrape Canvas for roster of students
+
+.SH SYNOPSIS
+.B roster [OPTIONS]
+
+.SH DESCRIPTION
+Scrapes Canvas for roster of students and outputs the roster as a CSV.
+The CSV row format is: \fB[name, CanvasID, CruzID, repo]\fP.
+The CSV is ordered lexicographically by last name.
+It is possible to restrict the rows that are output by specifying a range of
+CruzIDs to output. Note that the lexicographic ordering by last name still
+applies in this case. This is by design because CruzIDs are eaiser to enter than
+full names.
+
+.SH OPTIONS
+.TP
+.BR -c " " CSV ", " --csv=CSV
+specify the path to write the CSV to (default: \fBstdout\fP).
+
+.TP
+.BR -s " " START ", " --start=START
+specify the CruzID corresponding to the row containing the name of the student
+to start CSV output from.
+
+.TP
+.BR -e " " END ", " --start=END
+specify the CruzID corresponding to the row containing the name of the student
+to end CSV output with.
+
+.TP
+.BR -r " " RANGE ", " --range=RANGE
+specify the range of rows to output from the CSV, where the range is passed as:
+\fBstart,end\fP.
+
+.TP
+.BR -h ", " --help
+display program help and usage
