@@ -28,7 +28,7 @@ def clone_repos(csvfile, repodir, forward):
                 if forward:
                     writer.writerow(row)
                 logging.info(f"{cruzid}: successfully cloned repo")
-            except (GitCommandError, InvalidGitRepositoryError) as err:
+            except (GitCommandError, InvalidGitRepositoryError, UnicodeDecodeError) as err:
                 logging.error(f"{cruzid}: failed to clone repo: {err}")
         else:
             try:
@@ -38,7 +38,7 @@ def clone_repos(csvfile, repodir, forward):
                 if forward:
                     writer.writerow(row)
                 logging.info(f"{cruzid}: successfully pulled repo")
-            except (GitCommandError, InvalidGitRepositoryError) as err:
+            except (GitCommandError, InvalidGitRepositoryError, UnicodeDecodeError) as err:
                 logging.error(f"{cruzid}: failed to pull repo: {err}")
 
 def main():
