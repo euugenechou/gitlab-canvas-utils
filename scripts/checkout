@@ -2,6 +2,7 @@
 
 from canvasapi import Canvas
 from git import Repo, GitCommandError, InvalidGitRepositoryError
+from os.path import expanduser
 import argparse, csv, json, logging, os, re, sys
 
 def get_assignment(canvas_course, asgn_num):
@@ -76,20 +77,29 @@ def main():
     )
     parser.add_argument(
         "-a", "--asgn", nargs="?", required=True,
-        help="the assignment number to clone repos and checkout code for."
+        help=(
+            "specify the number of the assignment to checkout repos for,"
+            "using commit IDs scraped from Canvas"
+        )
     )
     parser.add_argument(
         "-c", "--csv", nargs="?", default=None,
-        help="the CSV containing the repos to clone."
+        help=(
+            "specify the path to the CSV containing the CruzIDs and corresponding"
+            "repos to checkout (default: stdin)."
+        )
     )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",
         choices=['debug', 'info', 'warning', 'error', 'critical'],
-        help="set logging level for logs to stderr (default: info)."
+        help=(
+            "specify the stderr logging level (choices: debug, info, warning,"
+            "error, critical)"
+        )
     )
     parser.add_argument(
         "-r", "--repodir", nargs="?", default="/tmp/repos",
-        help="the directory to contain the cloned repos (default: /tmp/repos)."
+        help="specify the directory that contains the cloned repos (default: /tmp/repos)."
     )
     args = parser.parse_args()
 
@@ -102,8 +112,9 @@ def main():
     canvas_logger = logging.getLogger("canvasapi")
     canvas_logger.propagate = False
 
-    with open("config.json", "r") as configfile:
-        config = json.load(configfile)
+    configfile = f"{expanduser('~')}/.config/guc/config.json"
+    with open(configfile, "r") as cfgfile:
+        config = json.load(cfgfile)
 
         canvas_url = config["canvas_url"]
         canvas_course_id = config["canvas_course_id"]

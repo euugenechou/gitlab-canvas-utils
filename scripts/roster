@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from canvasapi import Canvas
+from os.path import expanduser
 import argparse, csv, json, os, re, sys
 
 def create_student_csv(course, outfile, base_gitlab_url, start, end):
@@ -48,7 +49,7 @@ def main():
         )
     )
     parser.add_argument(
-        "-o", "--outfile", nargs="?", default=None,
+        "-c", "--csv", nargs="?", default=None,
         help="Output for generated CSV (default: stdout)."
     )
     parser.add_argument(
@@ -66,10 +67,11 @@ def main():
     args = parser.parse_args()
 
     # Write CSV to stdout by default.
-    outfile = open(args.outfile, "w") if args.outfile else sys.stdout
+    csvfile = open(args.csv, "w") if args.csv else sys.stdout
 
-    with open("config.json", "r") as configfile:
-        config = json.load(configfile)
+    configfile = f"{expanduser('~')}/.config/guc/config.json"
+    with open(configfile, "r") as cfgfile:
+        config = json.load(cfgfile)
 
         canvas_url = config["canvas_url"]
         canvas_course_id = config["canvas_course_id"]
@@ -92,7 +94,7 @@ def main():
         idrange = args.range.split(',')
         start, end = idrange[0], idrange[1]
 
-    create_student_csv(canvas_course, outfile, base_gitlab_url, start, end)
+    create_student_csv(canvas_course, csvfile, base_gitlab_url, start, end)
 
 if __name__ == "__main__":
     main()

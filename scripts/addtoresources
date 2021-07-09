@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from os.path import expanduser
 import csv, re, sys, json, gitlab, subprocess, argparse, logging
 
 SERVER = "https://git.ucsc.edu"
@@ -91,8 +92,9 @@ def main():
     )
 
     # Load the configuration.
-    with open("config.json", "r") as configfile:
-        config = json.load(configfile)
+    configfile = f"{expanduser('~')}/.config/guc/config.json"
+    with open(configfile, "r") as cfgfile:
+        config = json.load(cfgfile)
 
     # Validate the configuration.
     try:
