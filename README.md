@@ -4,6 +4,29 @@ A collection of scripts originally written for CSE 13S. Oversees everything from
 GitLab course group creation, student repository creation, all the way to
 cloning repos and adding users to a shared resources repository.
 
+## Quickstart
+
+There are currently 5 scripts/utilities:
+1. `addtoresources` - adds students to a shared resources repository.
+2. `checkout` - checks out cloned student repositories to commit IDs submitted
+   for a specific assignment.
+3. `clone` - clones student repositories.
+4. `createrepos` - creates course GitLab course and student repos.
+5. `roster` - scrapes Canvas for a CSV of the student roster.
+
+Read the supplied `man` pages for more information on each of these utilities.
+
+##### Creating GitLab course, student repos, and adding students to resources repository
+
+```bash
+$ roster | createrepos --forward | addtoresources
+```
+##### Cloning all student repos and checking them out to submitted commit IDs
+
+```bash
+$ roster | clone --forward | checkout --asgn=5
+```
+
 ## Installation
 
 To install these utilities, run:
