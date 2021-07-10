@@ -73,23 +73,26 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-c", "--csv", nargs="?", default=None,
-        help="File path of course config file."
+        help="the CSV containing the list of students to add to the resources repo."
     )
     parser.add_argument(
         "-v", "--verbose", default=False, action="store_true",
-        help="File path of course config file."
+        help="print verbose statistics to stderr."
     )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",
-        choices=['debug', 'info', 'warning', 'error', 'critical'],
-        help="Set logging level."
+        choices=['debug', 'info', 'warning', 'error', 'critical', 'off'],
+        help="set logging level for logs to stderr (default: info)."
     )
     args = parser.parse_args()
 
-    logging.basicConfig(
-        stream=sys.stderr, level=args.logging_level.upper(),
-        format="[%(levelname)s] %(message)s"
-    )
+    if args.logging_level == "off":
+        logging.disable(logging.CRITICAL)
+    else:
+        logging.basicConfig(
+            stream=sys.stderr, level=args.logging_level.upper(),
+            format="[%(levelname)s] %(message)s"
+        )
 
     # Load the configuration.
     configfile = f"{expanduser('~')}/.config/guc/config.json"

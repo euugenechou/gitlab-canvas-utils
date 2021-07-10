@@ -41,6 +41,7 @@ def validate_config(config):
         raise ValueError("invalid student repo role.")
 
 def create_repo(gl, group, name, users, role, template_repo, remove_unlisted):
+    success = True
     fullname = group.full_path + "/" + name
 
     try:
@@ -61,7 +62,7 @@ def create_repo(gl, group, name, users, role, template_repo, remove_unlisted):
         except:
             logging.error(f"{fullname}: error creating or finding repo.")
             repo_ops["error"] += 1
-            return
+            return False
 
     curr_members = repo.members.list()
     allowed_users = []
@@ -75,6 +76,7 @@ def create_repo(gl, group, name, users, role, template_repo, remove_unlisted):
             # User doesn't exist.
             logging.warning(f"{fullname}: user {username} doesn\'t (yet) exist... skipping.")
             repo_ops["nouser"] += 1
+            success = False
             continue
 
         if user.id not in [member.id for member in curr_members]:
@@ -87,6 +89,7 @@ def create_repo(gl, group, name, users, role, template_repo, remove_unlisted):
             except:
                 logging.error(f"{fullname}: unable to add {username} for access.")
                 repo_ops["error"] += 1
+                success = False
 
         try:
             member = repo.members.get(user.id)
@@ -97,6 +100,7 @@ def create_repo(gl, group, name, users, role, template_repo, remove_unlisted):
         except:
             logging.error(f"{fullname}: {username} not given {role} access.")
             repo_ops["error"] += 1
+            success = False
 
     if remove_unlisted:
         for member in curr_members:
@@ -109,10 +113,15 @@ def create_repo(gl, group, name, users, role, template_repo, remove_unlisted):
                     logging.error(f"{fullname}: unable to remove {role} access for {member.username}.")
                     repo_ops["error"] += 1
 
-def create_individual_repos(csvfile, gl, group, template_repo, role):
+    return success
+
+def create_individual_repos(csvfile, gl, group, template_repo, role, forward):
     reader = csv.reader(csvfile, delimiter=',')
-    for _, _, cruzid, _, in reader:
-        create_repo(gl, group, cruzid, [cruzid], role, template_repo, False)
+    writer = csv.writer(sys.stdout, delimiter=',')
+    for row in reader:
+        _, _, cruzid, _ = row
+        if create_repo(gl, group, cruzid, [cruzid], role, template_repo, False) and forward:
+            writer.writerow(row)
 
 def create_shared_repos(csvfile, gl, group, template_repo, role, remove_unlisted):
     reader = csv.reader(csvfile, delimiter=',')
@@ -201,8 +210,15 @@ def main():
         help="the CSV containing the list of students to create repos for."
     )
     parser.add_argument(
+        "-f", "--forward", default=False, action="store_true",
+        help=(
+            "output the CSV rows for the students whose repos were created to stdout"
+            " (only works if creating individual repos)."
+        )
+    )
+    parser.add_argument(
         "-s", "--shared", default=False, action="store_true",
-        help="create shared repos for students instead of individual repos"
+        help="create shared repos for students instead of individual repos."
     )
     parser.add_argument(
         "-r", "--remove-unlisted", default=False, action="store_true",
@@ -210,19 +226,22 @@ def main():
     )
     parser.add_argument(
         "-v", "--verbose", default=False, action="store_true",
-        help="print verbose statistics to stderr"
+        help="print verbose statistics to stderr."
     )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",
-        choices=['debug', 'info', 'warning', 'error', 'critical'],
-        help="set logging level."
+        choices=['debug', 'info', 'warning', 'error', 'critical', 'off'],
+        help="set logging level for logs to stderr (default: info)."
     )
     args = parser.parse_args()
 
-    logging.basicConfig(
-        stream=sys.stderr, level=args.logging_level.upper(),
-        format='[%(levelname)s] %(message)s'
-    )
+    if args.logging_level == "off":
+        logging.disable(logging.CRITICAL)
+    else:
+        logging.basicConfig(
+            stream=sys.stderr, level=args.logging_level.upper(),
+            format='[%(levelname)s] %(message)s'
+        )
 
     # Load the configuration.
     configfile = f"{expanduser('~')}/.config/guc/config.json"
@@ -270,7 +289,7 @@ def main():
     if args.shared:
         create_shared_repos(csvfile, user, course, template_repo, gitlab_role, args.remove_unlisted)
     else:
-        create_individual_repos(csvfile, user, course, template_repo, gitlab_role)
+        create_individual_repos(csvfile, user, course, template_repo, gitlab_role, args.forward)
 
     # Print statistics of repo creation.
     if args.verbose:

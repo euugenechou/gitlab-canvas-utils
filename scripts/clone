@@ -59,19 +59,22 @@ def main():
     )
     parser.add_argument(
         "-f", "--forward", default=False, action="store_true",
-        help="send the CSV rows for the students whose repos were cloned/pulled to stdout"
+        help="output the CSV rows for the students whose repos were cloned/pulled to stdout."
     )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",
-        choices=['debug', 'info', 'warning', 'error', 'critical'],
+        choices=['debug', 'info', 'warning', 'error', 'critical', 'off'],
         help="set logging level for logs to stderr (default: info)."
     )
     args = parser.parse_args()
 
-    logging.basicConfig(
-        stream=sys.stderr, level=args.logging_level.upper(),
-        format='[%(levelname)s] %(message)s'
-    )
+    if args.logging_level == "off":
+        logging.disable(logging.CRITICAL)
+    else:
+        logging.basicConfig(
+            stream=sys.stderr, level=args.logging_level.upper(),
+            format='[%(levelname)s] %(message)s'
+        )
 
     # Use stdin as default input to read CSV from.
     csvfile = open(args.csv, "r") if args.csv else sys.stdin

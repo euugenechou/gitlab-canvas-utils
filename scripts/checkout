@@ -79,23 +79,20 @@ def main():
         "-a", "--asgn", nargs="?", required=True,
         help=(
             "specify the number of the assignment to checkout repos for,"
-            "using commit IDs scraped from Canvas"
+            " using commit IDs scraped from Canvas."
         )
     )
     parser.add_argument(
         "-c", "--csv", nargs="?", default=None,
         help=(
             "specify the path to the CSV containing the CruzIDs and corresponding"
-            "repos to checkout (default: stdin)."
+            " repos to checkout (default: stdin)."
         )
     )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",
-        choices=['debug', 'info', 'warning', 'error', 'critical'],
-        help=(
-            "specify the stderr logging level (choices: debug, info, warning,"
-            "error, critical)"
-        )
+        choices=['debug', 'info', 'warning', 'error', 'critical', 'off'],
+        help="set logging level for logs to stderr (default: info)."
     )
     parser.add_argument(
         "-r", "--repodir", nargs="?", default="/tmp/repos",
@@ -103,10 +100,13 @@ def main():
     )
     args = parser.parse_args()
 
-    logging.basicConfig(
-        stream=sys.stderr, level=args.logging_level.upper(),
-        format='[%(levelname)s] %(message)s'
-    )
+    if args.logging_level == "off":
+        logging.disable(logging.CRITICAL)
+    else:
+        logging.basicConfig(
+            stream=sys.stderr, level=args.logging_level.upper(),
+            format='[%(levelname)s] %(message)s'
+        )
 
     # Disable canvasapi logging.
     canvas_logger = logging.getLogger("canvasapi")
