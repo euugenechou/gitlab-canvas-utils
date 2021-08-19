@@ -115,12 +115,12 @@ def create_repo(gl, group, name, users, role, template_repo, remove_unlisted):
 
     return success
 
-def create_individual_repos(csvfile, gl, group, template_repo, role, forward):
+def create_individual_repos(csvfile, gl, group, template_repo, role):
     reader = csv.reader(csvfile, delimiter=',')
     writer = csv.writer(sys.stdout, delimiter=',')
     for row in reader:
         _, _, cruzid, _ = row
-        if create_repo(gl, group, cruzid, [cruzid], role, template_repo, False) and forward:
+        if create_repo(gl, group, cruzid, [cruzid], role, template_repo, False):
             writer.writerow(row)
 
 def create_shared_repos(csvfile, gl, group, template_repo, role, remove_unlisted):
@@ -153,11 +153,11 @@ def group_check(user, course):
     if not group:
         user.groups.create({
             'name': group_name,
-            'path': path,
+            'path': course,
         })
 
         while not group:
-            group = group_search(user, path)
+            group = group_search(user, course)
 
         logging.info(f"{group.full_path}: group created.")
 
@@ -202,7 +202,9 @@ def main():
             "Creates GitLab repos for students in a course given a CSV.\n"
             "Will also create the couse group and quarter subgroup.\n"
             "Supports the creation of both individual repos and shared repos.\n"
-            "Each row in the CSV must be formatted as: name, CanvasID, CruzID, repo."
+            "Each row in the CSV must be formatted as: name, CanvasID, CruzID, repo.\n"
+            "Each row corresponding to a successfully cloned repo is output to stdout.\n"
+            "Row output only occurs when creating individual repos."
         )
     )
     parser.add_argument(
@@ -289,7 +291,7 @@ def main():
     if args.shared:
         create_shared_repos(csvfile, user, course, template_repo, gitlab_role, args.remove_unlisted)
     else:
-        create_individual_repos(csvfile, user, course, template_repo, gitlab_role, args.forward)
+        create_individual_repos(csvfile, user, course, template_repo, gitlab_role)
 
     # Print statistics of repo creation.
     if args.verbose:
