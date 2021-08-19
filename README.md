@@ -19,12 +19,12 @@ Read the supplied `man` pages for more information on each of these utilities.
 ##### Creating GitLab course, student repos, and adding students to resources repository
 
 ```bash
-$ roster | createrepos --forward | addtoresources
+$ roster | createrepos | addtoresources
 ```
 ##### Cloning all student repos and checking them out to submitted commit IDs
 
 ```bash
-$ roster | clone --forward | checkout --asgn=5
+$ roster | clone | checkout --asgn=5
 ```
 
 ## Installation
