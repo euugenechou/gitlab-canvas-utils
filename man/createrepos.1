@@ -7,10 +7,11 @@ createrepos - Creates GitLab repos for students
 .B createrepos [OPTIONS]
 
 .SH DESCRIPTION
-Creates GitLab repos for students in a course.
+Creates GitLab repos for students in a course using a CSV produced by \fBroster\fP.
 If the course does not have dedicated GitLab group, once is automatically
 created. The group will be created with a subgroup, with the subgroup indicating
 the quarter in which the course is taught.
+The CSV rows for successfully cloned/pulled repos are output to stdout.
 
 .SH OPTIONS
 .TP

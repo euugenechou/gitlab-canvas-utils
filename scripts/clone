@@ -42,7 +42,7 @@ def main():
         description=(
             "Clones student repos given a csv.\n"
             "Each row in the csv must be formatted as: name, CanvasID, CruzID, repo.\n"
-            "The rows corresponding to the successfully cloned repos are output to stdout."
+            "The rows for successfully cloned/pulled repos are output to stdout."
         )
     )
     parser.add_argument(
