@@ -112,7 +112,7 @@ def main():
     canvas_logger = logging.getLogger("canvasapi")
     canvas_logger.propagate = False
 
-    configfile = f"{expanduser('~')}/.config/guc/config.json"
+    configfile = f"{expanduser('~')}/.config/gcu/config.json"
     with open(configfile, "r") as cfgfile:
         config = json.load(cfgfile)
 

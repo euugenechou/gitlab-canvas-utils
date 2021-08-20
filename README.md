@@ -50,13 +50,13 @@ to your `$MANPATH`.
 To add the scripts directory:
 
 ```bash
-$ export PATH=$PATH:$HOME/.config/guc/scripts
+$ export PATH=$PATH:$HOME/.config/gcu/scripts
 ```
 
 To add the man directory:
 
 ```bash
-$ export MANPATH=$MANPATH:$HOME/.config/guc/man
+$ export MANPATH=$MANPATH:$HOME/.config/gcu/man
 ```
 
 You may want to add these exports to your shell configuration files.
@@ -68,7 +68,7 @@ modifed for the specific course that these utilities will be used for. To modify
 the configuration file, run:
 
 ```bash
-vi $HOME/.config/guc/config.json
+vi $HOME/.config/gcu/config.json
 ```
 
 A template configuration file will be supplied during installation if one does

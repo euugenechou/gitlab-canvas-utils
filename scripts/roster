@@ -69,7 +69,7 @@ def main():
     # Write CSV to stdout by default.
     csvfile = open(args.csv, "w") if args.csv else sys.stdout
 
-    configfile = f"{expanduser('~')}/.config/guc/config.json"
+    configfile = f"{expanduser('~')}/.config/gcu/config.json"
     with open(configfile, "r") as cfgfile:
         config = json.load(cfgfile)
 

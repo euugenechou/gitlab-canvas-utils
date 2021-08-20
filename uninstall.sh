@@ -2,9 +2,9 @@
 
 echo "Uninstalling gitlab-canvas-utils scripts and man pages..."
 
-if [[ -d $HOME/.config/guc ]]; then
+if [[ -d $HOME/.config/gcu ]]; then
     echo -n "gitlab-canvas-utils directory found, removing... "
-    rm -rf $HOME/.config/guc
+    rm -rf $HOME/.config/gcu
     echo "done."
 fi
 

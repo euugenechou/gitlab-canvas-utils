@@ -95,7 +95,7 @@ def main():
         )
 
     # Load the configuration.
-    configfile = f"{expanduser('~')}/.config/guc/config.json"
+    configfile = f"{expanduser('~')}/.config/gcu/config.json"
     with open(configfile, "r") as cfgfile:
         config = json.load(cfgfile)
 
