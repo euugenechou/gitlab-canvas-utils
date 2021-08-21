@@ -8,9 +8,9 @@ if [[ ! -d $HOME/.config/gcu ]]; then
     echo "done."
 fi
 
-if [[ ! -f $HOME/.config/gcu/config.json ]]; then
+if [[ ! -f $HOME/.config/gcu/config.toml ]]; then
     echo -n " - config not found, supplying template config... "
-    cp config.json $HOME/.config/gcu/.
+    cp config.toml $HOME/.config/gcu/.
     echo "done."
 fi
 

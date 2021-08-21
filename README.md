@@ -68,26 +68,24 @@ modifed for the specific course that these utilities will be used for. To modify
 the configuration file, run:
 
 ```bash
-vi $HOME/.config/gcu/config.json
+vi $HOME/.config/gcu/config.toml
 ```
 
 A template configuration file will be supplied during installation if one does
 not already exist. The configuration file should have this basic structure:
 
-```json
-{
-  "canvas_url": "https://canvas.ucsc.edu",
-  "canvas_course_id": 42878,
-  "canvas_token": "<your Canvas token>"
-  "course": "cse13s",
-  "quarter": "spring",
-  "year": "2021",
-  "gitlab_server": "https://git.ucsc.edu",
-  "gitlab_token": "<your GitLab token>",
-  "gitlab_role": "developer",
-  "template_repo": "https://git.ucsc.edu/euchou/cse13s-template.git",
-  "resource_repo_id": 4194
-}
+```toml
+canvas_url = "https://canvas.ucsc.edu"
+canvas_course_id = 42878
+canvas_token = "<your token here>"
+course = "cse13s"
+quarter = "spring"
+year = "2021"
+gitlab_server = "https://git.ucsc.edu"
+gitlab_token = "<your token here>"
+gitlab_role = "developer"
+template_repo = "https://git.ucsc.edu/euchou/cse13s-template.git"
+resource_repo_id = 4194
 ```
 
 - `canvas_url`: the Canvas server that your course is hosted on.
