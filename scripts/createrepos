@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from os.path import expanduser
-import csv, re, sys, json, gitlab, subprocess, argparse, logging
+import csv, sys, toml, gitlab, subprocess, argparse, logging
 
 SERVER = "https://git.ucsc.edu"
 DOMAIN = "ucsc.edu"
@@ -246,9 +246,7 @@ def main():
         )
 
     # Load the configuration.
-    configfile = f"{expanduser('~')}/.config/gcu/config.json"
-    with open(configfile, "r") as cfgfile:
-        config = json.load(cfgfile)
+    config = toml.load(f"{expanduser('~')}/.config/gcu/config.json")
 
     # Validate the configuration.
     try:

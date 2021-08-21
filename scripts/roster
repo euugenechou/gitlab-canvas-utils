@@ -2,7 +2,7 @@
 
 from canvasapi import Canvas
 from os.path import expanduser
-import argparse, csv, json, os, re, sys
+import argparse, csv, toml, os, re, sys
 
 def create_student_csv(course, outfile, base_gitlab_url, start, end):
     '''
@@ -69,19 +69,17 @@ def main():
     # Write CSV to stdout by default.
     csvfile = open(args.csv, "w") if args.csv else sys.stdout
 
-    configfile = f"{expanduser('~')}/.config/gcu/config.json"
-    with open(configfile, "r") as cfgfile:
-        config = json.load(cfgfile)
+    config = toml.load(f"{expanduser('~')}/.config/gcu/config.json")
 
-        canvas_url = config["canvas_url"]
-        canvas_course_id = config["canvas_course_id"]
-        canvas_token = config["canvas_token"]
-        course = config["course"]
-        quarter = config["quarter"]
-        year = config["year"]
+    canvas_url = config["canvas_url"]
+    canvas_course_id = config["canvas_course_id"]
+    canvas_token = config["canvas_token"]
+    course = config["course"]
+    quarter = config["quarter"]
+    year = config["year"]
 
-        canvas = Canvas(canvas_url, canvas_token)
-        canvas_course = canvas.get_course(canvas_course_id)
+    canvas = Canvas(canvas_url, canvas_token)
+    canvas_course = canvas.get_course(canvas_course_id)
 
     # This assumes that the GitLab project is created using the repocreator script.
     # Otherwise, the base GitLab url will change.
