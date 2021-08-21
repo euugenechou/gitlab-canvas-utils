@@ -95,7 +95,7 @@ def main():
         )
 
     # Load the configuration.
-    config = toml.load(f"{expanduser('~')}/.config/gcu/config.json")
+    config = toml.load(f"{expanduser('~')}/.config/gcu/config.toml")
 
     # Validate the configuration.
     try:

@@ -111,7 +111,7 @@ def main():
     canvas_logger = logging.getLogger("canvasapi")
     canvas_logger.propagate = False
 
-    config = toml.load(f"{expanduser('~')}/.config/gcu/config.json")
+    config = toml.load(f"{expanduser('~')}/.config/gcu/config.toml")
 
     canvas_url = config["canvas_url"]
     canvas_course_id = config["canvas_course_id"]
