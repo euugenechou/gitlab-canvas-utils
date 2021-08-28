@@ -21,6 +21,8 @@ def validate_config(config):
         raise ValueError("missing project ID of resource repo to add users to.")
 
 def add_user(gl, repo, username):
+    ok = True
+
     try:
         # Find user and add to list of allowed users.
         user = gl.users.list(username=username)[0]
@@ -28,6 +30,7 @@ def add_user(gl, repo, username):
         # User doesn't exist.
         logging.warning(f"user {username} doesn\'t (yet) exist... skipping.")
         repo_ops["nouser"] += 1
+        ok = False
         return
 
     if not repo.members.list(query=username) and not repo.members.all(query=username):
@@ -41,6 +44,7 @@ def add_user(gl, repo, username):
         except:
             logging.error(f"unable to add {username} for access.")
             repo_ops["error"] += 1
+            ok = False
     else:
         try:
             member = repo.members.all(query=username)[0]
@@ -57,11 +61,17 @@ def add_user(gl, repo, username):
         except:
             logging.error(f"{username} not given reporter access.")
             repo_ops["error"] += 1
+            ok = False
+
+    return ok
 
 def add_users(csvfile, gl, repo):
     reader = csv.reader(csvfile, delimiter=',')
-    for _, _, cruzid, _ in reader:
-        add_user(gl, repo, cruzid)
+    writer = csv.writer(sys.stdout, delimiter=',')
+    for row in reader:
+        _, _, cruzid, _ = row
+        if add_user(gl, repo, cruzid):
+            writer.writerow(row)
 
 def repo_search(user, project_id):
     repo = user.projects.get(project_id)
