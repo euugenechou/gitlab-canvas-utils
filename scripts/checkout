@@ -40,7 +40,9 @@ def checkout_assignment_repos(canvas_course, csvfile, repodir, asgn_num):
         return
 
     reader = csv.reader(csvfile, delimiter=',')
-    for _, canvasid, cruzid, _ in reader:
+    writer = csv.writer(sys.stdout, delimiter=',')
+    for row in reader:
+        _, canvasid, cruzid, _ = row
         repopath = os.path.join(repodir, cruzid)
 
         try:
@@ -60,6 +62,7 @@ def checkout_assignment_repos(canvas_course, csvfile, repodir, asgn_num):
             try:
                 repoclone.git.checkout(commit_id)
                 logging.info(f"{cruzid}: checked out commit {commit_id}")
+                writer.writerow(row)
             except (Exception, ValueError, GitCommandError) as err:
                 logging.error(f"{cruzid}: failed to check out {commit_id}: {err}")
 
@@ -111,15 +114,14 @@ def main():
     canvas_logger = logging.getLogger("canvasapi")
     canvas_logger.propagate = False
 
+    # Load and setup Canvas config.
     config = toml.load(f"{expanduser('~')}/.config/gcu/config.toml")
-
     canvas_url = config["canvas_url"]
     canvas_course_id = config["canvas_course_id"]
-    token = config["canvas_token"]
-
-    canvas = Canvas(canvas_url, token)
+    canvas = Canvas(canvas_url, config["canvas_token"])
     canvas_course = canvas.get_course(canvas_course_id)
 
+    # Check out the repos.
     csv = open(args.csv, "r") if args.csv else sys.stdin
     checkout_assignment_repos(canvas_course, csv, args.repodir, args.asgn)
 
