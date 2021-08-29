@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from os.path import expanduser
+from os.path import expanduser, basename
 import csv, sys, toml, gitlab, argparse, logging
 
 SERVER = "https://git.ucsc.edu"
@@ -12,13 +12,18 @@ repo_ops = {
     "error": 0
 }
 
+def get_repo(gl, project_id):
+    return gl.projects.get(project_id)
+
 def validate_config(config):
     if "server" not in config:
         config["server"] = SERVER
     if "gitlab_token" not in config:
         raise ValueError("missing GitLab token")
 
-def add_user(gl, repo, username):
+def add_user_to_repo(gl, repo, username):
+    name = basename(repo.web_url)
+
     try:
         # Find user and add to list of allowed users.
         user = gl.users.list(username=username)[0]
@@ -26,7 +31,7 @@ def add_user(gl, repo, username):
         # User doesn't exist.
         logging.warning(f"user {username} doesn\'t (yet) exist... skipping.")
         repo_ops["nouser"] += 1
-        return
+        return False
 
     if not repo.members.list(query=username) and not repo.members.all(query=username):
         try:
@@ -34,45 +39,56 @@ def add_user(gl, repo, username):
                 "user_id": user.id,
                 "access_level": gitlab.REPORTER_ACCESS
             })
-            logging.info(f"{username} added as reporter.")
+            logging.info(f"{username} added as reporter for {name}.")
             repo_ops["access_created"] += 1
         except:
-            logging.error(f"unable to add {username} for access.")
+            logging.error(f"unable to make {username} a reporter for {name}.")
             repo_ops["error"] += 1
+            return False
     else:
         try:
             member = repo.members.all(query=username)[0]
             if member.access_level != gitlab.REPORTER_ACCESS:
                 if member.access_level > gitlab.REPORTER_ACCESS:
-                    logging.warning(f"{username} has higher access than reporter.")
-                    return
+                    logging.warning(f"{username} has higher access than reporter for {name}.")
+                    return True
                 member.access_level = gitlab.REPORTER_ACCESS
                 member.save()
-                logging.info(f"{username} given reporter access.")
+                logging.info(f"{username} given reporter access for {name}.")
                 repo_ops["access_updated"] += 1
             else:
-                logging.info(f"{username} is already a reporter.")
+                logging.info(f"{username} is already a reporter for {name}.")
         except:
-            logging.error(f"{username} not given reporter access.")
+            logging.error(f"{username} not given reporter access for {name}.")
             repo_ops["error"] += 1
+            return False
 
-def add_users(csvfile, gl, repo):
-    reader = csv.reader(csvfile, delimiter=',')
-    for _, _, cruzid, _ in reader:
-        add_user(gl, repo, cruzid)
+    return True
 
-def repo_search(user, project_id):
-    repo = user.projects.get(project_id)
-    if not repo:
-        raise ValueError
-    return repo
+def add_users_to_repos(gl, repoids):
+    ok = True
+    reader = csv.reader(sys.stdin, delimiter=',')
+    writer = csv.writer(sys.stdout, delimiter=',')
+
+    for row in reader:
+        _, _, cruzid, _ = row
+
+        for repo_id in repoids:
+            repo = get_repo(gl, repo_id)
+            if not repo:
+                logging.error("invalid repo id")
+                repo_ops["error"] += 1
+                ok = False
+                continue
+
+            if not add_user_to_repo(gl, repo, cruzid):
+                ok = False
+
+        if ok:
+            writer.writerow(row)
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-c", "--csv", nargs="?", default=None,
-        help="the CSV containing the list of students to add to the resources repo."
-    )
     parser.add_argument(
         "-v", "--verbose", default=False, action="store_true",
         help="print verbose statistics to stderr."
@@ -83,8 +99,8 @@ def main():
         help="set logging level for logs to stderr (default: info)."
     )
     parser.add_argument(
-        "-r", "--repo-id", required=True, nargs="?",
-        help="the project ID of the repo to add to"
+        "repoids", nargs="*", default=[],
+        help="list of repo project ids to add to"
     )
     args = parser.parse_args()
 
@@ -108,22 +124,13 @@ def main():
 
     # Authenticate the token.
     try:
-        user = gitlab.Gitlab(config["server"], config["gitlab_token"], api_version=4)
-        user.auth()
+        gl = gitlab.Gitlab(config["server"], config["gitlab_token"], api_version=4)
+        gl.auth()
     except:
         logging.error("invalid GitLab token")
         sys.exit(1)
 
-    # Find the resource repo.
-    try:
-        resource_repo = repo_search(user, args.repo_id)
-    except:
-        logging.error("invalid repo ID")
-        repo_ops["error"] += 1
-        sys.exit(1)
-
-    csvfile = open(args.csv, "r") if args.csv else sys.stdin
-    add_users(csvfile, user, resource_repo)
+    add_users_to_repos(gl, args.repoids)
 
     # Print statistics of adding students to resource repo.
     if args.verbose:
