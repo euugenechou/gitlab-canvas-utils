@@ -13,12 +13,12 @@ function install_scripts() {
 }
 
 function install_manpages() {
-    if [[ ! -d $HOME/.config/gcu/man ]]; then
+    if [[ ! -d $HOME/.config/gcu/man/man1 ]]; then
         mkdir -p $HOME/.config/gcu/man/man1
     fi
 
     # Explicit copy so changes are copied in, if any were made.
-    cp man/* $HOME/.config/gcu/man/man1/.
+    cp man/man1/* $HOME/.config/gcu/man/man1/.
 }
 
 # User should explicitly request which things to install.
