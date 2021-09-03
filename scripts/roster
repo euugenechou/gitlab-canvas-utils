@@ -60,7 +60,7 @@ def main():
     )
     parser.add_argument(
         "-r", "--range", nargs="?", default=None,
-        help="range of CruzID to output (ex: --range=start,end)"
+        help="range of CruzID to output (example: --range=start,end)"
     )
     args = parser.parse_args()
 
