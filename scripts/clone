@@ -47,7 +47,7 @@ def main():
     )
     parser.add_argument(
         "-r", "--repodir", nargs="?", default="/tmp/repos",
-        help="the directory to contain the cloned repos (default: /tmp/repos)."
+        help="the directory to clone the repos into (default: /tmp/repos)."
     )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",

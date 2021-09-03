@@ -80,14 +80,11 @@ def main():
     )
     parser.add_argument(
         "-a", "--asgn", nargs="?", required=True,
-        help=(
-            "specify the number of the assignment to checkout repos for,"
-            " using commit IDs scraped from Canvas."
-        )
+        help="the number of the assignment to checkout repos for."
     )
     parser.add_argument(
         "-r", "--repodir", nargs="?", default="/tmp/repos",
-        help="specify the directory that contains the cloned repos (default: /tmp/repos)."
+        help="the directory that contains the cloned repos (default: /tmp/repos)."
     )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",

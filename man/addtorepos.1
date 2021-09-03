@@ -1,16 +1,16 @@
-.TH clone 1 "" "" gitlab-canvas-utils
+.TH addtorepos 1 "" "" gitlab-canvas-utils
 
 .SH NAME
-clone - Clones student GitLab repos
+addtorepos - Adds students to a set of GitLab repos
 
 .SH SYNOPSIS
-.B clone [OPTIONS]
+.B addtorepos [OPTIONS] [list of repoids]
 
 .SH DESCRIPTION
-Clones student repos, pulling them if already cloned.
+Adds students to a set of GitLab repos.
 Reads \fBstdin\fP for a CSV with rows formatted as \fB[name, CanvasID, CruzID,
 repo]\fP.
-Outputs CSV rows of students whose repos were cloned/pulled out to \fBstdout\fP.
+Outputs CSV rows of students that were added to \fBstdout\fP.
 
 .SH OPTIONS
 .TP
@@ -18,8 +18,8 @@ Outputs CSV rows of students whose repos were cloned/pulled out to \fBstdout\fP.
 show program help and exit
 
 .TP
-.BR -r " " REPODIR ", " --repodir=REPODIR
-the directory to clone the repos into (default: \fB/tmp/repos\fP).\fP
+.BR -v ", " --verbose
+print verbose statistics to \fBstderr\fP.
 
 .TP
 .BR -l " " LEVEL ", " --logging-level=LEVEL " " (default: " " info)
@@ -27,8 +27,8 @@ set logging level for logs to \fBstderr\fP (choices: \fBdebug\fP, \fBinfo\fP,
 \fBwarning\fP, \fBerror\fP, \fBcritical\fP, \fBoff\fP).
 
 .SH SEE ALSO
-addtorepos(1),
 checkout(1),
+clone(1),
 createrepos(1),
 pushfiles(1),
 rmfiles(1),

@@ -7,25 +7,20 @@ createrepos - Creates GitLab repos for students
 .B createrepos [OPTIONS]
 
 .SH DESCRIPTION
-Creates GitLab repos for students in a course using a CSV produced by \fBroster\fP.
-If the course does not have dedicated GitLab group, once is automatically
-created. The group will be created with a subgroup, with the subgroup indicating
-the quarter in which the course is taught.
-The CSV rows for successfully cloned/pulled repos are output to stdout.
+Creates GitLab repos for students.
+The repos are created under the course group and quarter subgroup.
+The course group and quarter subgroup are created if they don't exist.
+Supports the creation of both individual repos and shared repos.
+Reads \fBstdin\fP for a CSV with rows formatted as \fB[name, CanvasID, CruzID,
+repo]\fP.
+Outputs CSV rows of students whose repos were created out to \fBstdout\fP.
+Row output only occurs when creating individual repos.
+
 
 .SH OPTIONS
 .TP
 .BR -h ", " --help
-display program help and usage
-
-.TP
-.BR -c " " CSV ", " --csv=CSV
-specify the path to the CSV containing the students to create repos for
-
-.TP
-.BR -f ", " --forward
-output the CSV rows for the students whose repos were cloned/pulled to
-\fBstdout\fP (only works if creating individual repos).
+show program help and exit
 
 .TP
 .BR -s ", " --shared
@@ -38,16 +33,17 @@ removes unlisted students from shared repos, if any are found
 
 .TP
 .BR -v ", " --verbose
-enable verbose statistics about the creation of GitLab repositories (statistics
-printed to \fBstderr\fP).
+print verbose statistics to \fBstderr\fP.
 
 .TP
 .BR -l " " LEVEL ", " --logging-level=LEVEL " " (default: " " info)
-specify the \fBstderr\fP logging level (choices:
-\fBdebug\fP, \fBinfo\fP, \fBwarning\fP, \fBerror\fP, \fBcritical\fP, \fBoff\fP).
+set logging level for logs to \fBstderr\fP (choices: \fBdebug\fP, \fBinfo\fP,
+\fBwarning\fP, \fBerror\fP, \fBcritical\fP, \fBoff\fP).
 
 .SH SEE ALSO
-addtoresources(1),
+addtorepos(1),
 checkout(1),
 clone(1),
+pushfiles(1),
+rmfiles(1),
 roster(1)
