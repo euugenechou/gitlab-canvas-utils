@@ -67,20 +67,20 @@ def main():
     )
     parser.add_argument(
         "-c", "--commit-message", default=None, nargs="?", type=str,
-        help="the commit message for files to push."
+        help="the commit message for files to push"
     )
     parser.add_argument(
         "-r", "--repodir", nargs="?", default="/tmp/repos",
-        help="the directory that contains the cloned repos (default: /tmp/repos)."
+        help="the directory that contains the cloned repos (default: /tmp/repos)"
     )
     parser.add_argument(
         "-v", "--verbose", default=False, action="store_true",
-        help="print verbose statistics to stderr."
+        help="print verbose statistics to stderr"
     )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",
         choices=['debug', 'info', 'warning', 'error', 'critical', 'off'],
-        help="set logging level for logs to stderr."
+        help="set logging level for logs to stderr"
     )
     parser.add_argument(
         "files", nargs="*", default=[],

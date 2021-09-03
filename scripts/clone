@@ -47,12 +47,12 @@ def main():
     )
     parser.add_argument(
         "-r", "--repodir", nargs="?", default="/tmp/repos",
-        help="the directory to clone the repos into (default: /tmp/repos)."
+        help="the directory to clone the repos into (default: /tmp/repos)"
     )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",
         choices=['debug', 'info', 'warning', 'error', 'critical', 'off'],
-        help="set logging level for logs to stderr (default: info)."
+        help="set logging level for logs to stderr (default: info)"
     )
     args = parser.parse_args()
 

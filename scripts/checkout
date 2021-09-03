@@ -80,16 +80,16 @@ def main():
     )
     parser.add_argument(
         "-a", "--asgn", nargs="?", required=True,
-        help="the number of the assignment to checkout repos for."
+        help="the number of the assignment to checkout repos for"
     )
     parser.add_argument(
         "-r", "--repodir", nargs="?", default="/tmp/repos",
-        help="the directory that contains the cloned repos (default: /tmp/repos)."
+        help="the directory that contains the cloned repos (default: /tmp/repos)"
     )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",
         choices=['debug', 'info', 'warning', 'error', 'critical', 'off'],
-        help="set logging level for logs to stderr (default: info)."
+        help="set logging level for logs to stderr (default: info)"
     )
     args = parser.parse_args()
 

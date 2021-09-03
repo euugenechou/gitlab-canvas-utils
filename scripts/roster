@@ -52,15 +52,15 @@ def main():
     )
     parser.add_argument(
         "-s", "--start", nargs="?", default=None,
-        help="first CruzID to start CSV output from."
+        help="first CruzID to start CSV output from"
     )
     parser.add_argument(
         "-e", "--end", nargs="?", default=None,
-        help="last CruzID to end CSV output with."
+        help="last CruzID to end CSV output with"
     )
     parser.add_argument(
         "-r", "--range", nargs="?", default=None,
-        help="range of CruzID to output (ex: --range=start,end)."
+        help="range of CruzID to output (ex: --range=start,end)"
     )
     args = parser.parse_args()
 
