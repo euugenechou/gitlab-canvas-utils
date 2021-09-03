@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+
+from git import Repo
+import argparse, csv, os, sys, logging
+
+repo_ops = {
+    "removed": 0,
+    "errors": 0
+}
+
+def remove_from_repo(files, cruzid, repodir, msg):
+    """
+    Removes a list of files from a student's repo.
+    Returns true if the files were removed without error.
+    """
+    repopath = os.path.join(repodir, cruzid)
+    repo = Repo(repopath)
+
+    # Alter file paths.
+    files = [os.path.join(repopath, file) for file in files]
+
+    try:
+        logging.info(f"{cruzid}: removing: {files}")
+        repo.index.remove(files, working_tree=True)
+    except:
+        repo_ops["errors"] += 1
+        return False
+
+    try:
+        logging.info(f"{cruzid}: committing: {files}")
+        if msg is not None:
+            repo.index.commit(msg)
+        else:
+            repo.index.commit(f"removing: {files}")
+    except:
+        repo_ops["errors"] += 1
+        return False
+
+    try:
+        logging.info(f"{cruzid}: pushing: {files}")
+        origin = repo.remote(name="origin")
+        origin.push()
+        repo_ops["pushed"] += 1
+    except:
+        repo_ops["errors"] += 1
+        return False
+
+    return True
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-l", "--logging-level", default="INFO",
+        choices=['debug', 'info', 'warning', 'error', 'critical', 'off'],
+        help="Set logging level."
+    )
+    parser.add_argument(
+        "-r", "--repodir", nargs="?", default="/tmp/repos",
+        help="the directory containing the cloned repos (default: /tmp/repos)."
+    )
+    parser.add_argument(
+        "-v", "--verbose", default=False, action="store_true",
+        help="print verbose statistics to stderr."
+    )
+    parser.add_argument(
+        "-c", "--commit-message", default=None, nargs="?", type=str,
+        help="commit message for files to push"
+    )
+    parser.add_argument(
+        "files", nargs="*", default=[],
+        help="list of files to remove from student repositories"
+    )
+    args = parser.parse_args()
+
+    if args.logging_level == "off":
+        logging.disable(logging.CRITICAL)
+    else:
+        logging.basicConfig(
+            stream=sys.stderr, level=args.logging_level.upper(),
+            format='[%(levelname)s] %(message)s'
+        )
+
+    reader = csv.reader(sys.stdin, delimiter=',')
+    writer = csv.writer(sys.stdout, delimiter=',')
+
+    for row in reader:
+        _, _, cruzid, _ = row
+        if remove_from_repo(args.files, cruzid, args.repodir, args.commit_message):
+            writer.writerow(row)
+
+    if args.verbose:
+        print('Overall statistics:')
+        for k in sorted(repo_ops.keys()):
+            print(f" - {k}: {repo_ops[k]}")
+
+if __name__ == "__main__":
+    main()
