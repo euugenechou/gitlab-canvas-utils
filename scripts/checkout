@@ -24,9 +24,9 @@ def get_commit_id(body):
         return match.group(1)
     return None
 
-def checkout_assignment_repos(canvas_course, csvfile, repodir, asgn_num):
+def checkout_assignment_repos(canvas_course, repodir, asgn_num):
     '''
-    Checks out each student repo in the CSV file.
+    Checks out each student repo in the CSV read from stdin.
     Only repos that have been cloned already will be checked out.
     The commit that is checked out is the one submitted on Canvas for the assignment.
     '''
@@ -39,8 +39,9 @@ def checkout_assignment_repos(canvas_course, csvfile, repodir, asgn_num):
         logging.error(f"assignment {asgn_num} not found")
         return
 
-    reader = csv.reader(csvfile, delimiter=',')
+    reader = csv.reader(sys.stdin, delimiter=',')
     writer = csv.writer(sys.stdout, delimiter=',')
+
     for row in reader:
         _, canvasid, cruzid, _ = row
         repopath = os.path.join(repodir, cruzid)
@@ -70,11 +71,11 @@ def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
         description=(
-            "Checks out cloned student repos to the commit IDs submitted on Canvas.\n"
-            "Takes in a CSV where each row is formatted as: name, CanvasID, CruzID, repo.\n"
-            "A specific CSV can be specified via commandline option (default: stdin).\n"
-            "The repos are assumed to have been cloned using the cloner.py script.\n"
-            "Unless otherwise specified, the repos are assumed to be cloned under /tmp/repos/."
+            "Checks out cloned student repos to commit IDs submitted to a Canvas assignment.\n"
+            "The repos are assumed to have been cloned using the cloner script.\n"
+            "Unless otherwise specified, the repos are assumed to be cloned under /tmp/repos/.\n"
+            "Reads stdin for a CSV with rows formatted as [name, CanvasID, CruzID, repo].\n"
+            "Outputs CSV rows of students whose repos were checked out to stdout.\n"
         )
     )
     parser.add_argument(
@@ -85,20 +86,13 @@ def main():
         )
     )
     parser.add_argument(
-        "-c", "--csv", nargs="?", default=None,
-        help=(
-            "specify the path to the CSV containing the CruzIDs and corresponding"
-            " repos to checkout (default: stdin)."
-        )
+        "-r", "--repodir", nargs="?", default="/tmp/repos",
+        help="specify the directory that contains the cloned repos (default: /tmp/repos)."
     )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",
         choices=['debug', 'info', 'warning', 'error', 'critical', 'off'],
         help="set logging level for logs to stderr (default: info)."
-    )
-    parser.add_argument(
-        "-r", "--repodir", nargs="?", default="/tmp/repos",
-        help="specify the directory that contains the cloned repos (default: /tmp/repos)."
     )
     args = parser.parse_args()
 
@@ -122,8 +116,7 @@ def main():
     canvas_course = canvas.get_course(canvas_course_id)
 
     # Check out the repos.
-    csv = open(args.csv, "r") if args.csv else sys.stdin
-    checkout_assignment_repos(canvas_course, csv, args.repodir, args.asgn)
+    checkout_assignment_repos(canvas_course, args.repodir, args.asgn)
 
 if __name__ == "__main__":
     main()

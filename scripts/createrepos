@@ -115,16 +115,16 @@ def create_repo(gl, group, name, users, role, template_repo, remove_unlisted):
 
     return success
 
-def create_individual_repos(csvfile, gl, group, template_repo, role):
-    reader = csv.reader(csvfile, delimiter=',')
+def create_individual_repos(gl, group, template_repo, role):
+    reader = csv.reader(sys.stdin, delimiter=',')
     writer = csv.writer(sys.stdout, delimiter=',')
     for row in reader:
         _, _, cruzid, _ = row
         if create_repo(gl, group, cruzid, [cruzid], role, template_repo, False):
             writer.writerow(row)
 
-def create_shared_repos(csvfile, gl, group, template_repo, role, remove_unlisted):
-    reader = csv.reader(csvfile, delimiter=',')
+def create_shared_repos(gl, group, template_repo, role, remove_unlisted):
+    reader = csv.reader(sys.stdin, delimiter=',')
     for row in reader:
         if len(row) > 1:
             groupname, cruzids = row[0], row[1:]
@@ -199,23 +199,13 @@ def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
         description=(
-            "Creates GitLab repos for students in a course given a CSV.\n"
-            "Will also create the couse group and quarter subgroup.\n"
+            "Creates GitLab repos for students.\n"
+            "The repos are created under the course group and quarter subgroup.\n"
+            "The course group and quarter subgroup are created if they don't exist.\n"
             "Supports the creation of both individual repos and shared repos.\n"
-            "Each row in the CSV must be formatted as: name, CanvasID, CruzID, repo.\n"
-            "Each row corresponding to a successfully cloned repo is output to stdout.\n"
+            "Reads stdin for a CSV with rows formatted as [name, CanvasID, CruzID, repo].\n"
+            "Outputs CSV rows of students whose repos were created out to stdout.\n"
             "Row output only occurs when creating individual repos."
-        )
-    )
-    parser.add_argument(
-        "-c", "--csv", nargs="?", default=None,
-        help="the CSV containing the list of students to create repos for."
-    )
-    parser.add_argument(
-        "-f", "--forward", default=False, action="store_true",
-        help=(
-            "output the CSV rows for the students whose repos were created to stdout"
-            " (only works if creating individual repos)."
         )
     )
     parser.add_argument(
@@ -278,18 +268,15 @@ def main():
         logging.error("unable to find or create GitLab course.")
         sys.exit(1)
 
-    # Use stdin as default input to read CSV from.
-    csvfile = open(args.csv, "r") if args.csv else sys.stdin
-
     # Unpack some config parameters.
     template_repo = config["template_repo"]
     gitlab_role = config["gitlab_role"]
 
     # Repos are either shared or not shared at this point.
     if args.shared:
-        create_shared_repos(csvfile, user, course, template_repo, gitlab_role, args.remove_unlisted)
+        create_shared_repos(user, course, template_repo, gitlab_role, args.remove_unlisted)
     else:
-        create_individual_repos(csvfile, user, course, template_repo, gitlab_role)
+        create_individual_repos(user, course, template_repo, gitlab_role)
 
     # Print statistics of repo creation.
     if args.verbose:

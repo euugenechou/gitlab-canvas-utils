@@ -14,6 +14,10 @@ def push_to_repo(files, cruzid, repodir, msg):
     Returns true if the files were added, committed, and pushed without error.
     """
     repopath = os.path.join(repodir, cruzid)
+    if not os.path.exists(repopath):
+        logging.error(f"{cruzid}: repo not cloned")
+        return False
+
     repo = Repo(repopath)
 
     # Copy each file to the repo.
@@ -51,7 +55,16 @@ def push_to_repo(files, cruzid, repodir, msg):
     return True
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawTextHelpFormatter,
+        description=(
+            "Pushes a set of files to student repos.\n"
+            "The student repos to add the files to must be cloned.\n"
+            "Unless otherwise specified, the repos are assumed to be cloned under /tmp/repos.\n"
+            "Reads stdin for a CSV with rows formatted as [name, CanvasID, CruzID, repo].\n"
+            "Outputs CSV rows of students whose repos have been updated to stdout.\n"
+        )
+    )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",
         choices=['debug', 'info', 'warning', 'error', 'critical', 'off'],

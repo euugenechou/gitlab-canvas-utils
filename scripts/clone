@@ -3,16 +3,16 @@
 from git import Repo, GitCommandError, InvalidGitRepositoryError
 import argparse, csv, logging, os, sys
 
-def clone_repos(csvfile, repodir):
+def clone_repos(repodir):
     '''
-    Clones each student repo in the CSV file.
+    Clones each student repo in the CSV read from stdin.
     Repos that have already been cloned are pulled from instead.
     Repos are cloned into the specified directory.
     '''
     if not os.path.exists(repodir):
         os.makedirs(repodir)
 
-    reader = csv.reader(csvfile, delimiter=',')
+    reader = csv.reader(sys.stdin, delimiter=',')
     writer = csv.writer(sys.stdout, delimiter=",")
 
     for row in reader:
@@ -40,14 +40,10 @@ def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
         description=(
-            "Clones student repos given a csv.\n"
-            "Each row in the csv must be formatted as: name, CanvasID, CruzID, repo.\n"
-            "The rows for successfully cloned/pulled repos are output to stdout."
+            "Clones student repos, pulling them if already cloned.\n"
+            "Reads stdin for a CSV with rows formatted as [name, CanvasID, CruzID, repo].\n"
+            "Outputs CSV rows of students whose repos were cloned/pulled out to stdout.\n"
         )
-    )
-    parser.add_argument(
-        "-c", "--csv", nargs="?", default=None,
-        help="the CSV containing the repos to clone."
     )
     parser.add_argument(
         "-r", "--repodir", nargs="?", default="/tmp/repos",
@@ -68,9 +64,7 @@ def main():
             format='[%(levelname)s] %(message)s'
         )
 
-    # Use stdin as default input to read CSV from.
-    csvfile = open(args.csv, "r") if args.csv else sys.stdin
-    clone_repos(csvfile, args.repodir)
+    clone_repos(args.repodir)
 
 if __name__ == "__main__":
     main()

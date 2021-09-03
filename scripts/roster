@@ -6,8 +6,8 @@ import argparse, csv, toml, os, re, sys
 
 def create_student_csv(course, base_gitlab_url, start, end):
     '''
-    Writes the course student roster as a csv file.
-    Each row formatted as: name, canvasid, cruzid, repo.
+    Writes the course student roster as a CSV file.
+    Each row formatted as: [name, CanvasID, CruzID, repo].
     '''
     students = []
 
@@ -44,10 +44,10 @@ def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
         description=(
-            "Outputs csv of entire Canvas course roster in lexographic order.\n"
+            "Outputs CSV of entire Canvas course roster in lexicographic name order to stdout.\n"
             "This ordering applies when restricting to range of students by CruzID.\n"
             "This is by design because CruzIDs are easier to enter than full names.\n"
-            "Each row in the csv is formatted as: name, canvasid, cruzid, repo."
+            "Each row in the CSV is formatted as: [name, CanvasID, CruzID, repo]."
         )
     )
     parser.add_argument(
