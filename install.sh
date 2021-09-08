@@ -50,8 +50,8 @@ for i in "$@"; do
 done
 
 # Create the config directory if it doesn't exist.
-if [[ ! -d $HOME/.config ]]; then
-    mkdir $HOME/.config
+if [[ ! -d $HOME/.config/gcu ]]; then
+    mkdir -p $HOME/.config/gcu
 fi
 
 # If symlinking, then that's all we need to do.
@@ -66,7 +66,7 @@ fi
 # Provide a template config if one doesn't exist already.
 if [[ ! -f $HOME/.config/gcu/config.toml ]]; then
     echo "Configuration file missing, supplying template config."
-    cp config.toml $HOME/.config/gcu/.
+    cp config.toml $HOME/.config/gcu/config.toml
 fi
 
 # Install scripts if specified.
