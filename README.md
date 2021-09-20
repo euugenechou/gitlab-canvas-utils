@@ -4,15 +4,38 @@ A collection of scripts originally written for CSE 13S. Oversees everything from
 GitLab course group creation, student repository creation, all the way to
 cloning repos and adding users to a shared resources repository.
 
-## Quickstart
+## Installation
 
-There are currently 5 scripts/utilities:
-1. `addtoresources` - adds students to a shared resources repository.
+To install the included scripts, run:
+
+```bash
+./install --all
+```
+
+To install the scripts and `man` pages for development, run:
+
+```bash
+./install --symlink
+```
+
+To uninstall the scripts, run:
+
+```bash
+$ ./uninstall.sh
+```
+
+## Utilities
+
+There are currently 7 scripts/utilities:
+1. `addtorepos` - adds students to a set of specified repositories as reporters
 2. `checkout` - checks out cloned student repositories to commit IDs submitted
    for a specific assignment.
 3. `clone` - clones student repositories.
 4. `createrepos` - creates course GitLab course and student repos.
-5. `roster` - scrapes Canvas for a CSV of the student roster.
+5. `pushfiles` - adds files to cloned student repositories, pushing the changes.
+6. `rmfiles` - removes files from cloned student repositories, pushing the
+   changes.
+7. `roster` - scrapes Canvas for a CSV of the student roster.
 
 Read the supplied `man` pages for more information on each of these utilities.
 
@@ -27,36 +50,22 @@ $ roster | createrepos | addtoresources
 $ roster | clone | checkout --asgn=5
 ```
 
-## Installation
-
-To install these utilities, run:
-
-```bash
-$ ./install.sh
-```
-
-Similarly, to uninstall, run:
-
-```bash
-$ ./uninstall.sh
-```
-
 ## Paths
 
 To get (arguably) the full experience of these utilities, you should add the
 installed scripts directory to your `$PATH` and the installed man page directory
 to your `$MANPATH`.
 
-To add the scripts directory:
+To add the `scripts` directory:
 
 ```bash
 $ export PATH=$PATH:$HOME/.config/gcu/scripts
 ```
 
-To add the man directory:
+To add the `man` directory (the double colon is intentional):
 
 ```bash
-$ export MANPATH=$MANPATH:$HOME/.config/gcu/man
+$ export MANPATH=::$MANPATH:$HOME/.config/gcu/man
 ```
 
 You may want to add these exports to your shell configuration files.
@@ -85,7 +94,6 @@ gitlab_server = "https://git.ucsc.edu"
 gitlab_token = "<your token here>"
 gitlab_role = "developer"
 template_repo = "https://git.ucsc.edu/euchou/cse13s-template.git"
-resource_repo_id = 4194
 ```
 
 - `canvas_url`: the Canvas server that your course is hosted on.
@@ -106,8 +114,6 @@ resource_repo_id = 4194
 - `template_repo`: the template repository to import and use as a base for
   student repositories. Note that this template repository will need to be
   publically visible.
-- `resource_repo_id`: the GitLab repository ID of a shared resources repository
-  that students should be added to.
 
 ## Contributing
 
