@@ -25,6 +25,7 @@ function install_manpages() {
 # The symlink option symlinks the scripts and manpages instead of just copying.
 if [[ $# -lt 1 ]]; then
     echo "usage: $0 --[all, scripts, manpages, symlink]"
+    exit 0
 fi
 
 scripts=false
