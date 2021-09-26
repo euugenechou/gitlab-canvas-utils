@@ -85,6 +85,6 @@ if $manpages; then
     install_manpages
     echo "done."
     echo "To add the man pages to your \$MANPATH, run:"
-    echo " $ export MANPATH=\$MANPATH::\$HOME/.config/gcu/share/man"
+    echo " $ export MANPATH=\$MANPATH::\$HOME/.config/gcu/man"
     echo "The double colon is not a typo."
 fi
