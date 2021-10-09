@@ -5,14 +5,17 @@ from git import Repo, GitCommandError
 from os.path import expanduser
 import argparse, csv, toml, logging, os, re, sys
 
-def get_assignment(canvas_course, asgn_num):
+def get_assignment(canvas_course, asgn_num, design):
     '''
     Returns the specified assignment object.
-    Note: this ignores assignments on Canvas for DESIGN.pdf submissions (if applicable).
+    The assignment for DESIGN.pdf submissions is returned if `design` is true.
     '''
     for asgn in canvas_course.get_assignments():
-        if f"Assignment {asgn_num}" in asgn.name and "DESIGN" not in asgn.name:
-            return asgn
+        if f"Assignment {asgn_num}" in asgn.name:
+            if design and "DESIGN" in asgn.name:
+                return asgn
+            elif not design and "DESIGN" not in asgn.name:
+                return asgn
     return None
 
 def get_commit_id(body):
@@ -24,7 +27,7 @@ def get_commit_id(body):
         return match.group(1)
     return None
 
-def checkout_assignment_repos(canvas_course, repodir, asgn_num):
+def checkout_assignment_repos(canvas_course, repodir, asgn_num, design):
     '''
     Checks out each student repo in the CSV read from stdin.
     Only repos that have been cloned already will be checked out.
@@ -34,7 +37,7 @@ def checkout_assignment_repos(canvas_course, repodir, asgn_num):
         logging.error(f"{repodir}: directory not found")
         return
 
-    asgn = get_assignment(canvas_course, asgn_num)
+    asgn = get_assignment(canvas_course, asgn_num, design)
     if not asgn:
         logging.error(f"assignment {asgn_num} not found")
         return
@@ -87,6 +90,10 @@ def main():
         help="the directory that contains the cloned repos (default: /tmp/repos)"
     )
     parser.add_argument(
+        "-d", "--design", action="store_true", default=False,
+        help="get commit IDs for DESIGN.pdf submission instead of assignment submission"
+    )
+    parser.add_argument(
         "-l", "--logging-level", default="INFO",
         choices=['debug', 'info', 'warning', 'error', 'critical', 'off'],
         help="set logging level for logs to stderr (default: info)"
@@ -113,7 +120,7 @@ def main():
     canvas_course = canvas.get_course(canvas_course_id)
 
     # Check out the repos.
-    checkout_assignment_repos(canvas_course, args.repodir, args.asgn)
+    checkout_assignment_repos(canvas_course, args.repodir, args.asgn, args.design)
 
 if __name__ == "__main__":
     main()
