@@ -16,7 +16,7 @@ def create_student_csv(course, base_gitlab_url, start, end):
     for user in course.get_users(enrollment_type=['student'], enrollment_state=['active']):
         name = user.sortable_name
         canvasid = user.id
-        email = user.email
+        email = user.login_id
         cruzid = re.search(r'(.*?)(\+.*?)?@ucsc.edu', email).group(1)
         repo = os.path.join(base_gitlab_url, f"{cruzid}.git")
         students.append((name, canvasid, cruzid, repo))
