@@ -10,10 +10,12 @@ def create_student_csv(course, base_gitlab_url, start, end):
     Each row formatted as: [name, CanvasID, CruzID, repo].
     '''
     students = []
+    roles = ['student', 'teacher', 'observer']
+    states = ['active']
 
-    # Special attention required when getting cruzid (some people have + in the email).
+    # Use login ID instead of user ID to get email.
     # The regex match on cruzid should always succeed, provided a proper email.
-    for user in course.get_users(enrollment_type=['student'], enrollment_state=['active']):
+    for user in course.get_users(enrollment_type=roles, enrollment_state=states):
         name = user.sortable_name
         canvasid = user.id
         email = user.login_id
