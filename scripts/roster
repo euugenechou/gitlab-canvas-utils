@@ -4,14 +4,18 @@ from canvasapi import Canvas
 from os.path import expanduser
 import argparse, csv, toml, os, re, sys
 
-def create_student_csv(course, base_gitlab_url, start, end):
+def create_student_csv(course, base_gitlab_url, start, end, all):
     '''
     Writes the course student roster as a CSV file.
     Each row formatted as: [name, CanvasID, CruzID, repo].
     '''
     students = []
-    roles = ['student', 'teacher', 'ta', 'observer']
+    roles = ['student']
     states = ['active']
+
+    # These roles should grab everyone on the Canvas roster, not just students.
+    if all:
+        roles += ['ta', 'teacher', 'observer']
 
     # Use login ID instead of user ID to get email.
     # The regex match on cruzid should always succeed, provided a proper email.
@@ -64,6 +68,10 @@ def main():
         "-r", "--range", nargs="?", default=None,
         help="range of CruzID to output (example: --range=start,end)"
     )
+    parser.add_argument(
+        "-a", "--all", default=False, action="store_true",
+        help="consider all roles when scraping the Canvas roster"
+    )
     args = parser.parse_args()
 
     # Load the user's course and Canvas configuration.
@@ -86,7 +94,7 @@ def main():
         idrange = args.range.split(',')
         args.start, args.end = idrange[0], idrange[1]
 
-    create_student_csv(canvas_course, base_gitlab_url, args.start, args.end)
+    create_student_csv(canvas_course, base_gitlab_url, args.start, args.end, args.all)
 
 if __name__ == "__main__":
     main()
