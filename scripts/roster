@@ -4,7 +4,7 @@ from canvasapi import Canvas
 from os.path import expanduser
 import argparse, csv, toml, os, re, sys
 
-def create_student_csv(course, base_gitlab_url, start, end, all):
+def create_student_csv(course, base_gitlab_url, start, end, all, cruzid=False):
     '''
     Writes the course student roster as a CSV file.
     Each row formatted as: [name, CanvasID, CruzID, repo].
@@ -33,6 +33,8 @@ def create_student_csv(course, base_gitlab_url, start, end, all):
 
     # Sort students by name in increasing lexographic order, then write them out.
     students.sort(key=lambda s: s[0])
+    if cruzid:
+        students.sort(key=lambda s: s[2])
     writer = csv.writer(sys.stdout, delimiter=",")
     for name, canvasid, cruzid, repo in students:
         # If we reach the start, we know to start writing.
@@ -72,6 +74,10 @@ def main():
         "-a", "--all", default=False, action="store_true",
         help="consider all roles when scraping the Canvas roster"
     )
+    parser.add_argument(
+        "-c", "--cruzid", default=False, action="store_true",
+        help="sort by cruzid instead of by last name"
+    )
     args = parser.parse_args()
 
     # Load the user's course and Canvas configuration.
@@ -94,7 +100,7 @@ def main():
         idrange = args.range.split(',')
         args.start, args.end = idrange[0], idrange[1]
 
-    create_student_csv(canvas_course, base_gitlab_url, args.start, args.end, args.all)
+    create_student_csv(canvas_course, base_gitlab_url, args.start, args.end, args.all, cruzid=args.cruzid)
 
 if __name__ == "__main__":
     main()
