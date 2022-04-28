@@ -4,7 +4,7 @@ from canvasapi import Canvas
 from os.path import expanduser
 import argparse, csv, toml, os, re, sys
 
-def create_student_csv(course, base_gitlab_url, start, end, all, cruzid=False):
+def create_student_csv(course, base_gitlab_url, start, end, all, use_cruzid=False):
     '''
     Writes the course student roster as a CSV file.
     Each row formatted as: [name, CanvasID, CruzID, repo].
@@ -33,7 +33,7 @@ def create_student_csv(course, base_gitlab_url, start, end, all, cruzid=False):
 
     # Sort students by name in increasing lexographic order, then write them out.
     students.sort(key=lambda s: s[0])
-    if cruzid:
+    if use_cruzid:
         students.sort(key=lambda s: s[2])
     writer = csv.writer(sys.stdout, delimiter=",")
     for name, canvasid, cruzid, repo in students:
@@ -100,7 +100,7 @@ def main():
         idrange = args.range.split(',')
         args.start, args.end = idrange[0], idrange[1]
 
-    create_student_csv(canvas_course, base_gitlab_url, args.start, args.end, args.all, cruzid=args.cruzid)
+    create_student_csv(canvas_course, base_gitlab_url, args.start, args.end, args.all, use_cruzid=args.cruzid)
 
 if __name__ == "__main__":
     main()
