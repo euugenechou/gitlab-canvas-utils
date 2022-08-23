@@ -44,34 +44,38 @@ def create_repo(gl, group, name, users, role, template_repo, remove_unlisted):
     success = True
     fullname = group.full_path + "/" + name
 
-    try:
-        # Try creating the repo.
-        repo = gl.projects.create({
-            "name": name,
-            "namespace_id": group.id,
-            "visibility": "private",
-            "lfs_enabled": False,
-            "import_url": template_repo
-        })
-        logging.info(f"{fullname}: repo created.")
-        repo_ops["newrepo"] += 1
-    except:
-        # Maybe the repo already exists?
-        try:
-            repo = gl.projects.get(fullname)
-        except:
-            logging.error(f"{fullname}: error creating or finding repo.")
-            repo_ops["error"] += 1
-            return False
-
-    curr_members = repo.members.list()
     allowed_users = []
+    curr_members = None
 
     for username in users:
         try:
             # Find user and add to list of allowed users.
             user = gl.users.list(username=username)[0]
             allowed_users.append(user.id)
+
+            try:
+                # Try creating the repo.
+                repo = gl.projects.create({
+                    "name": name,
+                    "namespace_id": group.id,
+                    "visibility": "private",
+                    "lfs_enabled": False,
+                    "import_url": template_repo
+                })
+                logging.info(f"{fullname}: repo created.")
+                repo_ops["newrepo"] += 1
+
+                curr_members = repo.members.list()
+
+            except:
+                # Maybe the repo already exists?
+                try:
+                    repo = gl.projects.get(fullname)
+                except:
+                    logging.error(f"{fullname}: error creating or finding repo.")
+                    repo_ops["error"] += 1
+                    return False
+
         except:
             # User doesn't exist.
             logging.warning(f"{fullname}: user {username} doesn\'t (yet) exist... skipping.")
