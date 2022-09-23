@@ -113,7 +113,7 @@ template_repo = "https://git.ucsc.edu/euchou/cse13s-template.git"
 - `gitlab_role`: the default role of students for their individual or shared repositories.
 - `template_repo`: the template repository to import and use as a base for
   student repositories. Note that this template repository will need to be
-  publically visible.
+  publically visible and *must* be supplied an HTTP URL, not SSH.
 
 ## Contributing
 
