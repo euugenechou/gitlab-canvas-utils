@@ -65,8 +65,6 @@ def create_repo(gl, group, name, users, role, template_repo, remove_unlisted):
                 logging.info(f"{fullname}: repo created.")
                 repo_ops["newrepo"] += 1
 
-                curr_members = repo.members.list()
-
             except:
                 # Maybe the repo already exists?
                 try:
@@ -83,6 +81,7 @@ def create_repo(gl, group, name, users, role, template_repo, remove_unlisted):
             success = False
             continue
 
+        curr_members = repo.members.list()
         if user.id not in [member.id for member in curr_members]:
             try:
                 member = repo.members.create({
