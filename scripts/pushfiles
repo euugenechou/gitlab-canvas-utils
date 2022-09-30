@@ -20,10 +20,12 @@ def push_to_repo(files, cruzid, repodir, msg):
 
     repo = Repo(repopath)
 
-    # Copy each file to the repo.
-    # Then alter update file paths.
+    # Copy each file to the repo, creating directories if needed.
+    # Then alter/update file paths.
     for file in files:
-        shutil.copyfile(file, os.path.join(repopath, file))
+        path = os.path.join(repopath, file)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        shutil.copyfile(file, path)
     files = [os.path.join(repopath, file) for file in files]
 
     try:
