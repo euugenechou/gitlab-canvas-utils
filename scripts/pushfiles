@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from git import Repo
+from git import Repo, Actor
 import argparse, csv, os, sys, logging, shutil
 
 repo_ops = {
@@ -8,7 +8,7 @@ repo_ops = {
     "errors": 0
 }
 
-def push_to_repo(files, cruzid, repodir, msg):
+def push_to_repo(files, cruzid, repodir, msg, author = None):
     """
     Pushes a list of files to a student's repo.
     Returns true if the files were added, committed, and pushed without error.
@@ -37,10 +37,9 @@ def push_to_repo(files, cruzid, repodir, msg):
 
     try:
         logging.info(f"{cruzid}: committing: {files}")
-        if msg is not None:
-            repo.index.commit(msg)
-        else:
-            repo.index.commit(f"adding: {files}")
+        if msg is None:
+            msg = f"adding: {files}"
+        repo.index.commit(msg, author = author, committer = author)
     except:
         repo_ops["errors"] += 1
         return False
@@ -88,7 +87,22 @@ def main():
         "files", nargs="*", default=[],
         help="list of files to push to student repositories"
     )
+    parser.add_argument(
+        "-a", "--author",
+        help="override the commit author name requires --email as well"
+    )
+    parser.add_argument(
+        "-e", "--email", default = None,
+        help="override the commit author name requires --author as well"
+    )
     args = parser.parse_args()
+
+    if (args.email == None) != (args.author == None):
+        print("Need both author and email, see --help", file = sys.stderr)
+        exit(1)
+    author = None
+    if args.email != None:
+        author = Actor(name = args.author, email = args.email)
 
     if args.logging_level == "off":
         logging.disable(logging.CRITICAL)
@@ -103,7 +117,7 @@ def main():
 
     for row in reader:
         _, _, cruzid, _ = row
-        if push_to_repo(args.files, cruzid, args.repodir, args.commit_message):
+        if push_to_repo(args.files, cruzid, args.repodir, args.commit_message, author = author):
             writer.writerow(row)
 
     if args.verbose:
