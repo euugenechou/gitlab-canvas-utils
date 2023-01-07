@@ -27,12 +27,8 @@ def validate_config(config):
         config["server"] = SERVER
     if "gitlab_token" not in config:
         raise ValueError("missing GitLab token.")
-    if "course" not in config:
-        raise ValueError("missing course.")
-    if "quarter" not in config:
-        raise ValueError("missing quarter.")
-    if "year" not in config:
-        raise ValueError("missing year.")
+    if "base_repo_path" not in config:
+        raise ValueError("missing base repo path.")
     if "template_repo" not in config:
         raise ValueError("missing template repo to import.")
     if "gitlab_role" not in config:
@@ -143,9 +139,9 @@ def group_search(user, path):
     return None
 
 def subgroup_search(user, group, path):
-    for subgroup in user.groups.list():
+    for subgroup in group.subgroups.list():
         if subgroup.path == path and subgroup.parent_id == group.id:
-            return subgroup
+            return user.groups.get(subgroup.id)
     logging.warning(f"{group.full_path}/{path}: subgroup not found.")
     return None
 
@@ -170,14 +166,12 @@ def group_check(user, course):
     logging.info(f"{group.full_path}: group notifications disabled.")
     return group
 
-def subgroup_check(user, group, quarter, year):
-    path = quarter + year
+def subgroup_check(user, group, path):
     subgroup = subgroup_search(user, group, path)
-    subgroup_name = quarter.capitalize() + " " + year
 
     if not subgroup:
         user.groups.create({
-            'name': subgroup_name,
+            'name': path,
             'path': path,
             'parent_id': group.id
         })
@@ -194,9 +188,15 @@ def subgroup_check(user, group, quarter, year):
 
     return subgroup
 
-def course_check(user, course, quarter, year):
+def course_check(user, course, subgroups):
     group = group_check(user, course)
-    return subgroup_check(user, group, quarter, year)
+    for subgroup in subgroups:
+        group = subgroup_check(user, group, subgroup)
+    return group
+
+def parse_base_repo_path(path):
+    components = path.split("/")
+    return (components[0], components[1:])
 
 def main():
     parser = argparse.ArgumentParser(
@@ -250,7 +250,7 @@ def main():
 
     # Authenticate the token.
     try:
-        user = gitlab.Gitlab(config["server"], config["gitlab_token"], api_version=4)
+        user = gitlab.Gitlab(config["server"], config["gitlab_token"], api_version="4")
         user.auth()
     except:
         logging.error("invalid GitLab token.")
@@ -264,9 +264,12 @@ def main():
         logging.error("unable to import template repo.")
         sys.exit(1)
 
+    # Parse out course and subgroup components.
+    course, subgroups = parse_base_repo_path(config["base_repo_path"])
+
     # Check if group and subgroup for class exist, create if they don't.
     try:
-        course = course_check(user, config["course"], config["quarter"], config["year"])
+        course = course_check(user, course, subgroups)
     except:
         logging.error("unable to find or create GitLab course.")
         sys.exit(1)

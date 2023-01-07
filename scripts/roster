@@ -85,15 +85,13 @@ def main():
     canvas_url = config["canvas_url"]
     canvas_course_id = config["canvas_course_id"]
     canvas_token = config["canvas_token"]
-    course = config["course"]
-    quarter = config["quarter"]
-    year = config["year"]
+    base_repo_path = config["base_repo_path"]
     canvas = Canvas(canvas_url, canvas_token)
     canvas_course = canvas.get_course(canvas_course_id)
 
     # This assumes that the GitLab project is created using the repocreator script.
     # Otherwise, the base GitLab url will change.
-    base_gitlab_url = f"git@git.ucsc.edu:{course}/{quarter}{year}/"
+    base_gitlab_url = f"git@git.ucsc.edu:{base_repo_path}/"
 
     # Some basic parsing of the range option.
     if args.range:

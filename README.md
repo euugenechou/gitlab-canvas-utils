@@ -42,7 +42,7 @@ Read the supplied `man` pages for more information on each of these utilities.
 ##### Creating GitLab course, student repos, and adding students to resources repository
 
 ```bash
-$ roster | createrepos | addtoresources
+$ roster | createrepos | addtorepos <resource repo id>
 ```
 ##### Cloning all student repos and checking them out to submitted commit IDs
 
@@ -87,9 +87,7 @@ not already exist. The configuration file should have this basic structure:
 canvas_url = "https://canvas.ucsc.edu"
 canvas_course_id = 42878
 canvas_token = "<your token here>"
-course = "cse13s"
-quarter = "spring"
-year = "2021"
+base_repo_path = "cse13s/winter2023/section01"
 gitlab_server = "https://git.ucsc.edu"
 gitlab_token = "<your token here>"
 gitlab_role = "developer"
@@ -105,8 +103,10 @@ template_repo = "https://git.ucsc.edu/euchou/cse13s-template.git"
   create a new access token under the section titled **Approved Integrations**.
   Note that you must have at least TA-level privilege under the course you want
   to use these scripts with.
-- `course`, `quarter`, and `year` should reflect, as one can imagine, the
-  course, quarter, and year in which the course is held.
+- `base_repo_path`: the base repo path that student repos should be created
+  under. The first component of the path should generally be the course, and
+  subsequent components are the nested subgroups. An example of a base repo path
+  without a section subgroup: `cse13s/winter2023`.
 - `gitlab_server`: the GitLab server that you want to create the course group
   and student repos on.
 - `gitlab_token`: your GitLab token as a string. Your token should have API-level privilege.
