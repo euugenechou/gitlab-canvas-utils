@@ -203,8 +203,8 @@ def main():
         formatter_class=argparse.RawTextHelpFormatter,
         description=(
             "Creates GitLab repos for students.\n"
-            "The repos are created under the course group and quarter subgroup.\n"
-            "The course group and quarter subgroup are created if they don't exist.\n"
+            "The repos are created under the configured base repo path.\n"
+            "The group and subgroups in the path are created if they don't exist.\n"
             "Supports the creation of both individual repos and shared repos.\n"
             "Reads stdin for a CSV with rows formatted as [name, CanvasID, CruzID, repo].\n"
             "Outputs CSV rows of students whose repos were created out to stdout.\n"

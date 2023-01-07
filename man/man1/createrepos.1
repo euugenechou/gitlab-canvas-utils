@@ -8,8 +8,8 @@ createrepos - Creates GitLab repos for students
 
 .SH DESCRIPTION
 Creates GitLab repos for students.
-The repos are created under the course group and quarter subgroup.
-The course group and quarter subgroup are created if they don't exist.
+The repos are created under the configured base repo path.
+The group and subgroups in the path are created if they don't exist.
 Supports the creation of both individual repos and shared repos.
 Reads \fBstdin\fP for a CSV with rows formatted as \fB[name, CanvasID, CruzID,
 repo]\fP.
