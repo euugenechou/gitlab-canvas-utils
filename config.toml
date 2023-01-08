@@ -1,9 +1,7 @@
 canvas_url = "https://canvas.ucsc.edu"
-canvas_course_id = 47245
+canvas_course_id = 472878
 canvas_token = "<your token here>"
-course = "cse13s"
-quarter = "fall"
-year = "2021"
+base_repo_path = "cse13s/winter2023/section01"
 gitlab_server = "https://git.ucsc.edu"
 gitlab_token = "<your token here>"
 gitlab_role = "developer"
