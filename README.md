@@ -26,16 +26,17 @@ $ ./uninstall.sh
 
 ## Utilities
 
-There are currently 7 scripts/utilities:
-1. `addtorepos` - adds students to a set of specified repositories as reporters
-2. `checkout` - checks out cloned student repositories to commit IDs submitted
-   for a specific assignment.
-3. `clone` - clones student repositories.
-4. `createrepos` - creates course GitLab course and student repos.
-5. `pushfiles` - adds files to cloned student repositories, pushing the changes.
-6. `rmfiles` - removes files from cloned student repositories, pushing the
-   changes.
-7. `roster` - scrapes Canvas for a CSV of the student roster.
+A brief description of the provided scripts/utilities:
+- `addtorepos` - adds students to a set of specified repositories as reporters
+- `checkout` - checks out cloned student repositories to commit IDs submitted
+- for a specific assignment.
+- `clone` - clones student repositories.
+- `createrepos` - creates course GitLab course and student repos.
+- `pushfiles` - adds files to cloned student repositories, pushing the changes.
+- `rmfiles` - removes files from cloned student repositories, pushing the
+- changes.
+- `rmfromrepos` - removes students from a set of specified repositories as reporters
+- `roster` - scrapes Canvas for a CSV of the student roster.
 
 Read the supplied `man` pages for more information on each of these utilities.
 
