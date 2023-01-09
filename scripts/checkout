@@ -112,8 +112,14 @@ def main():
     canvas_logger = logging.getLogger("canvasapi")
     canvas_logger.propagate = False
 
-    # Load and setup Canvas config.
-    config = toml.load(f"{expanduser('~')}/.config/gcu/config.toml")
+    # Load configuration.
+    try:
+        config = toml.load(os.environ["GCU_CONFIG"])
+    except KeyError:
+        logging.error("missing GCU_CONFIG environment variable")
+        sys.exit(1)
+
+    # Unpack configuration.
     canvas_url = config["canvas_url"]
     canvas_course_id = config["canvas_course_id"]
     canvas = Canvas(canvas_url, config["canvas_token"])

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from canvasapi import Canvas
-from os.path import expanduser
 import argparse, csv, toml, os, re, sys
 
 def create_student_csv(course, base_gitlab_url, start, end, all, use_cruzid=False):
@@ -81,17 +80,20 @@ def main():
     args = parser.parse_args()
 
     # Load the user's course and Canvas configuration.
-    config = toml.load(f"{expanduser('~')}/.config/gcu/config.toml")
+    try:
+        config = toml.load(os.environ["GCU_CONFIG"])
+    except KeyError:
+        print("[ERROR] missing GCU_CONFIG environment variable", file=sys.stderr)
+        sys.exit(1)
+
+    # Unpack configuration.
     canvas_url = config["canvas_url"]
     canvas_course_id = config["canvas_course_id"]
     canvas_token = config["canvas_token"]
-    base_repo_path = config["base_repo_path"]
+    base_repo_path = config["base_repo_path"].strip("/")
+    base_gitlab_url = f"git@git.ucsc.edu:{base_repo_path}/"
     canvas = Canvas(canvas_url, canvas_token)
     canvas_course = canvas.get_course(canvas_course_id)
-
-    # This assumes that the GitLab project is created using the repocreator script.
-    # Otherwise, the base GitLab url will change.
-    base_gitlab_url = f"git@git.ucsc.edu:{base_repo_path}/"
 
     # Some basic parsing of the range option.
     if args.range:

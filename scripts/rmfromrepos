@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-from os.path import expanduser, basename
-import csv, sys, toml, gitlab, argparse, logging
+import os, csv, sys, toml, gitlab, argparse, logging
 
 SERVER = "https://git.ucsc.edu"
 
@@ -21,7 +20,7 @@ def validate_config(config):
         raise ValueError("missing GitLab token")
 
 def remove_user_from_repo(gl, repo, username):
-    name = basename(repo.web_url)
+    name = os.path.basename(repo.web_url)
 
     try:
         # Find user.
@@ -101,7 +100,11 @@ def main():
         )
 
     # Load the configuration.
-    config = toml.load(f"{expanduser('~')}/.config/gcu/config.toml")
+    try:
+        config = toml.load(os.environ["GCU_CONFIG"])
+    except KeyError:
+        logging.error("missing GCU_CONFIG environment variable")
+        sys.exit(1)
 
     # Validate the configuration.
     try:

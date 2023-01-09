@@ -38,17 +38,6 @@ A brief description of the provided scripts/utilities:
 
 Read the supplied `man` pages for more information on each of these utilities.
 
-##### Creating GitLab course, student repos, and adding students to resources repository
-
-```bash
-$ roster | createrepos | addtorepos <resource repo id>
-```
-##### Cloning all student repos and checking them out to submitted commit IDs
-
-```bash
-$ roster | clone | checkout --asgn=5
-```
-
 ## Paths
 
 To get (arguably) the full experience of these utilities, you should add the
@@ -71,16 +60,17 @@ You may want to add these exports to your shell configuration files.
 
 ## Course Configuration
 
-After running the installation script, a configuration file will need to be
-modifed for the specific course that these utilities will be used for. To modify
-the configuration file, run:
+Running the installation script will add a template configuration file under
+the following path:
 
 ```bash
 vi $HOME/.config/gcu/config.toml
 ```
 
-A template configuration file will be supplied during installation if one does
-not already exist. The configuration file should have this basic structure:
+The template configuration file should be copied, modified, and used on a
+per-course basis. It is recommended to have a directory of configuration files
+if you have multiple courses to manage. A valid configuration file contains the
+following fields:
 
 ```toml
 canvas_url = "https://canvas.ucsc.edu"
@@ -111,6 +101,23 @@ template_repo = "https://git.ucsc.edu/euchou/cse13s-template.git"
 - `template_repo`: the template repository to import and use as a base for
   student repositories. Note that this template repository will need to be
   publically visible and *must* be supplied an HTTP URL, not SSH.
+
+To specify which config to use, simply set a `GCU_CONFIG` environment variable
+before running any of the provided scripts/utilities. The following example
+command pipelines only have `GCU_CONFIG` set for the respective pipeline so as to
+not pollute the environment variable namespace, but using `export` and/or `env`
+are viable approaches as well.
+
+##### Creating GitLab course, student repos, and adding students to resources repository
+
+```bash
+$ GCU_CONFIG=<path to config> bash -c "roster | createrepos | addtorepos <resource repo id>"
+```
+##### Cloning all student repos and checking them out to submitted commit IDs
+
+```bash
+$ GCU_CONFIG=<path to config> bash -c "roster | clone | checkout --asgn=5"
+```
 
 ## Contributing
 
