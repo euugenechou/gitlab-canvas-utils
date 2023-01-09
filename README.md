@@ -21,7 +21,7 @@ To install the scripts and `man` pages for development, run:
 To uninstall the scripts, run:
 
 ```bash
-$ ./uninstall.sh
+./uninstall.sh
 ```
 
 ## Utilities
@@ -47,13 +47,13 @@ to your `$MANPATH`.
 To add the `scripts` directory:
 
 ```bash
-$ export PATH=$PATH:$HOME/.config/gcu/scripts
+export PATH=$PATH:$HOME/.config/gcu/scripts
 ```
 
 To add the `man` directory (the double colon is intentional):
 
 ```bash
-$ export MANPATH=::$MANPATH:$HOME/.config/gcu/man
+export MANPATH=::$MANPATH:$HOME/.config/gcu/man
 ```
 
 You may want to add these exports to your shell configuration files.
@@ -112,12 +112,12 @@ handy if you happen to be managing several classes concurrently.
 ##### Creating GitLab course, student repos, and adding students to resources repository
 
 ```bash
-$ GCU_CONFIG=<path to config> bash -c "roster | createrepos | addtorepos <resource repo id>"
+GCU_CONFIG=<path to config> bash -c "roster | createrepos | addtorepos <resource repo id>"
 ```
 ##### Cloning all student repos and checking them out to submitted commit IDs
 
 ```bash
-$ GCU_CONFIG=<path to config> bash -c "roster | clone | checkout --asgn=5"
+GCU_CONFIG=<path to config> bash -c "roster | clone | checkout --asgn=5"
 ```
 
 ## Contributing
