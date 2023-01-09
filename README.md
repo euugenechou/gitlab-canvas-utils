@@ -106,7 +106,8 @@ To specify which config to use, simply set a `GCU_CONFIG` environment variable
 before running any of the provided scripts/utilities. The following example
 command pipelines only have `GCU_CONFIG` set for the respective pipeline so as to
 not pollute the environment variable namespace, but using `export` and/or `env`
-are viable approaches as well.
+are viable approaches as well. Having `GCU_CONFIG` set per command pipeline is
+handy if you happen to be managing several classes concurrently.
 
 ##### Creating GitLab course, student repos, and adding students to resources repository
 
