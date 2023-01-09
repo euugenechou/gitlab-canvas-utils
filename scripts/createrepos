@@ -16,10 +16,10 @@ repo_ops = {
 }
 
 roles = {
+    "reporter": gitlab.REPORTER_ACCESS,
     "developer": gitlab.DEVELOPER_ACCESS,
     "maintainer": gitlab.MAINTAINER_ACCESS,
     "owner": gitlab.OWNER_ACCESS,
-    "reporter": gitlab.REPORTER_ACCESS
 }
 
 def validate_config(config):
@@ -31,10 +31,6 @@ def validate_config(config):
         raise ValueError("missing base repo path.")
     if "template_repo" not in config:
         raise ValueError("missing template repo to import.")
-    if "gitlab_role" not in config:
-        raise ValueError("missing student repo role.")
-    if config["gitlab_role"] not in roles:
-        raise ValueError("invalid student repo role.")
 
 def create_repo(gl, group, name, users, role, template_repo, remove_unlisted):
     success = True
@@ -219,12 +215,17 @@ def main():
         help="create shared repos for students instead of individual repos"
     )
     parser.add_argument(
-        "-r", "--remove-unlisted", default=False, action="store_true",
+        "-u", "--remove-unlisted", default=False, action="store_true",
         help="remove unlisted students from shared repos if any are found"
     )
     parser.add_argument(
         "-v", "--verbose", default=False, action="store_true",
         help="print verbose statistics to stderr"
+    )
+    parser.add_argument(
+        "-r", "--role", default="developer",
+        choices=['reporter', 'developer', 'maintainer', 'owner'],
+        help="set GitLab role for added students (default: developer)"
     )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",
@@ -277,15 +278,11 @@ def main():
         logging.error(f"unable to find or create GitLab course: {err}.")
         sys.exit(1)
 
-    # Unpack some config parameters.
-    template_repo = config["template_repo"]
-    gitlab_role = config["gitlab_role"]
-
     # Repos are either shared or not shared at this point.
     if args.shared:
-        create_shared_repos(user, course, template_repo, gitlab_role, args.remove_unlisted)
+        create_shared_repos(user, course, config["template_repo"], args.role, args.remove_unlisted)
     else:
-        create_individual_repos(user, course, template_repo, gitlab_role)
+        create_individual_repos(user, course, config["template_repo"], args.role)
 
     # Print statistics of repo creation.
     if args.verbose:

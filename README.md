@@ -27,15 +27,13 @@ $ ./uninstall.sh
 ## Utilities
 
 A brief description of the provided scripts/utilities:
-- `addtorepos` - adds students to a set of specified repositories as reporters
-- `checkout` - checks out cloned student repositories to commit IDs submitted
-- for a specific assignment.
+- `addtorepos` - adds students to a set of specified repositories.
+- `checkout` - checks out cloned student repositories to commit IDs submitted for a specific assignment.
 - `clone` - clones student repositories.
 - `createrepos` - creates course GitLab course and student repos.
 - `pushfiles` - adds files to cloned student repositories, pushing the changes.
-- `rmfiles` - removes files from cloned student repositories, pushing the
-- changes.
-- `rmfromrepos` - removes students from a set of specified repositories as reporters
+- `rmfiles` - removes files from cloned student repositories, pushing the changes.
+- `rmfromrepos` - removes students from a set of specified repositories
 - `roster` - scrapes Canvas for a CSV of the student roster.
 
 Read the supplied `man` pages for more information on each of these utilities.
@@ -91,7 +89,6 @@ canvas_token = "<your token here>"
 base_repo_path = "cse13s/winter2023/section01"
 gitlab_server = "https://git.ucsc.edu"
 gitlab_token = "<your token here>"
-gitlab_role = "developer"
 template_repo = "https://git.ucsc.edu/euchou/cse13s-template.git"
 ```
 
@@ -111,7 +108,6 @@ template_repo = "https://git.ucsc.edu/euchou/cse13s-template.git"
 - `gitlab_server`: the GitLab server that you want to create the course group
   and student repos on.
 - `gitlab_token`: your GitLab token as a string. Your token should have API-level privilege.
-- `gitlab_role`: the default role of students for their individual or shared repositories.
 - `template_repo`: the template repository to import and use as a base for
   student repositories. Note that this template repository will need to be
   publically visible and *must* be supplied an HTTP URL, not SSH.

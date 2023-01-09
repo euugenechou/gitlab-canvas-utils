@@ -28,12 +28,17 @@ specify that shared repositories for students should be created instead of
 individual repos
 
 .TP
-.BR -r ", " --remove-unlisted
+.BR -u ", " --remove-unlisted
 remove unlisted students from shared repos if any are found
 
 .TP
 .BR -v ", " --verbose
 print verbose statistics to \fBstderr\fP
+
+.TP
+.BR -r " " ROLE ", " --role=ROLE " " (default: " " developer)
+set GitLab role for added students (choices: \fBreporter\fP, \fBdeveloper\fP,
+\fBmaintainer\fP, \fBowner\fP)
 
 .TP
 .BR -l " " LEVEL ", " --logging-level=LEVEL " " (default: " " info)

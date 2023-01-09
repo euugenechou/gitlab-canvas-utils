@@ -12,6 +12,13 @@ repo_ops = {
     "error": 0
 }
 
+roles = {
+    "reporter": gitlab.REPORTER_ACCESS,
+    "developer": gitlab.DEVELOPER_ACCESS,
+    "maintainer": gitlab.MAINTAINER_ACCESS,
+    "owner": gitlab.OWNER_ACCESS,
+}
+
 def get_repo(gl, project_id):
     return gl.projects.get(project_id)
 
@@ -21,7 +28,7 @@ def validate_config(config):
     if "gitlab_token" not in config:
         raise ValueError("missing GitLab token")
 
-def add_user_to_repo(gl, repo, username):
+def add_user_to_repo(gl, repo, username, role):
     name = basename(repo.web_url)
 
     try:
@@ -39,9 +46,9 @@ def add_user_to_repo(gl, repo, username):
         try:
             repo.members.create({
                 "user_id": user.id,
-                "access_level": gitlab.REPORTER_ACCESS
+                "access_level": roles[role],
             })
-            logging.info(f"{username} added as reporter for {name}.")
+            logging.info(f"{username} added as {role} for {name}.")
             repo_ops["access_created"] += 1
         except:
             logging.error(f"unable to make {username} a reporter for {name}.")
@@ -69,7 +76,7 @@ def add_user_to_repo(gl, repo, username):
 
     return True
 
-def add_users_to_repos(gl, repoids):
+def add_users_to_repos(gl, repoids, role):
     ok = True
     reader = csv.reader(sys.stdin, delimiter=',')
     writer = csv.writer(sys.stdout, delimiter=',')
@@ -85,7 +92,7 @@ def add_users_to_repos(gl, repoids):
                 ok = False
                 continue
 
-            if not add_user_to_repo(gl, repo, cruzid):
+            if not add_user_to_repo(gl, repo, cruzid, role):
                 ok = False
 
         if ok:
@@ -108,6 +115,11 @@ def main():
         "-l", "--logging-level", default="INFO",
         choices=['debug', 'info', 'warning', 'error', 'critical', 'off'],
         help="set logging level for logs to stderr (default: info)"
+    )
+    parser.add_argument(
+        "-r", "--role", default="reporter",
+        choices=['reporter', 'developer', 'maintainer', 'owner'],
+        help="set GitLab role for added students (default: reporter)"
     )
     parser.add_argument(
         "repoids", nargs="*", default=[],
@@ -135,13 +147,13 @@ def main():
 
     # Authenticate the token.
     try:
-        gl = gitlab.Gitlab(config["server"], config["gitlab_token"], api_version=4)
+        gl = gitlab.Gitlab(config["server"], config["gitlab_token"], api_version="4")
         gl.auth()
     except:
         logging.error("invalid GitLab token")
         sys.exit(1)
 
-    add_users_to_repos(gl, args.repoids)
+    add_users_to_repos(gl, args.repoids, args.role)
 
     # Print statistics of adding students to resource repo.
     if args.verbose:
