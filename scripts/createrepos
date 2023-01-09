@@ -37,7 +37,7 @@ def create_repo(gl, group, name, users, role, template_repo, remove_unlisted):
     fullname = group.full_path + "/" + name
 
     allowed_users = []
-    curr_members = None
+    curr_members = []
 
     for username in users:
         try:
