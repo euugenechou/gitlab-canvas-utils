@@ -2,7 +2,6 @@
 
 from canvasapi import Canvas
 from git import Repo, GitCommandError
-from os.path import expanduser
 import argparse, csv, toml, logging, os, re, sys
 
 def get_assignment(canvas_course, asgn_num, design):
