@@ -225,7 +225,7 @@ def main():
     parser.add_argument(
         "-r", "--role", default="developer",
         choices=['reporter', 'developer', 'maintainer', 'owner'],
-        help="set GitLab role for added students (default: developer)"
+        help="set student GitLab role (default: developer)"
     )
     parser.add_argument(
         "-l", "--logging-level", default="INFO",
