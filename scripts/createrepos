@@ -133,7 +133,7 @@ def create_shared_repos(gl, group, template_repo, role, remove_unlisted):
 
 def group_search(user, path):
     for group in user.groups.list():
-        if group.full_path == path:
+        if group.path == path:
             return group
     logging.warning(f"{path}: group not found.")
     return None
@@ -149,8 +149,10 @@ def group_check(user, course):
     group = group_search(user, course)
 
     if not group:
+        # GitLab needs the group name to be capitalized for some reason.
+        # If it isn't, the group can never be found even if it exists.
         user.groups.create({
-            'name': course,
+            'name': course.capitalize(),
             'path': course,
         })
 
@@ -271,8 +273,8 @@ def main():
     # Check if group and subgroup for class exist, create if they don't.
     try:
         course = course_check(user, course, subgroups)
-    except:
-        logging.error("unable to find or create GitLab course.")
+    except BaseException as err:
+        logging.error(f"unable to find or create GitLab course: {err}.")
         sys.exit(1)
 
     # Unpack some config parameters.
