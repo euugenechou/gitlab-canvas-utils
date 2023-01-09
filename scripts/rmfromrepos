@@ -6,8 +6,7 @@ import csv, sys, toml, gitlab, argparse, logging
 SERVER = "https://git.ucsc.edu"
 
 repo_ops = {
-    "access_created": 0,
-    "access_updated": 0,
+    "access_revoked": 0,
     "nouser": 0,
     "error": 0
 }
@@ -21,7 +20,7 @@ def validate_config(config):
     if "gitlab_token" not in config:
         raise ValueError("missing GitLab token")
 
-def add_user_to_repo(gl, repo, username):
+def remove_user_from_repo(gl, repo, username):
     name = basename(repo.web_url)
 
     try:
@@ -33,43 +32,21 @@ def add_user_to_repo(gl, repo, username):
         repo_ops["nouser"] += 1
         return False
 
-    if not repo.members.list(query=username) and not repo.members.all(query=username):
-        # If the user isn't a member of this repo and isn't a member of an
-        # ancestor repo, then try to add the user as a reporter.
+    # Can only remove access to this repo if the user has access to it.
+    # This either means direct access, or access through an ancestor repo.
+    if repo.members.list(query=username) or repo.members.all(query=username):
         try:
-            repo.members.create({
-                "user_id": user.id,
-                "access_level": gitlab.REPORTER_ACCESS
-            })
-            logging.info(f"{username} added as reporter for {name}.")
-            repo_ops["access_created"] += 1
+            repo.members.delete(user.id)
+            logging.info(f"{username} removed from {name}.")
+            repo_ops["access_revoked"] += 1
         except:
-            logging.error(f"unable to make {username} a reporter for {name}.")
-            repo_ops["error"] += 1
-            return False
-    else:
-        # If the user is a member of this repo or a member of an ancestor repo,
-        # then try to update the user's access.
-        try:
-            member = repo.members.all(query=username)[0]
-            if member.access_level != gitlab.REPORTER_ACCESS:
-                if member.access_level > gitlab.REPORTER_ACCESS:
-                    logging.warning(f"{username} has higher access than reporter for {name}.")
-                    return True
-                member.access_level = gitlab.REPORTER_ACCESS
-                member.save()
-                logging.info(f"{username} given reporter access for {name}.")
-                repo_ops["access_updated"] += 1
-            else:
-                logging.info(f"{username} is already a reporter for {name}.")
-        except:
-            logging.error(f"{username} not given reporter access for {name}.")
+            logging.error(f"unable to remove {username} from {name}.")
             repo_ops["error"] += 1
             return False
 
     return True
 
-def add_users_to_repos(gl, repoids):
+def remove_users_from_repos(gl, repoids):
     ok = True
     reader = csv.reader(sys.stdin, delimiter=',')
     writer = csv.writer(sys.stdout, delimiter=',')
@@ -85,7 +62,7 @@ def add_users_to_repos(gl, repoids):
                 ok = False
                 continue
 
-            if not add_user_to_repo(gl, repo, cruzid):
+            if not remove_user_from_repo(gl, repo, cruzid):
                 ok = False
 
         if ok:
@@ -95,9 +72,9 @@ def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
         description=(
-            "Adds students to a set of GitLab repos.\n"
+            "Removes students from a set of GitLab repos.\n"
             "Reads stdin for a CSV with rows formatted as [name, CanvasID, CruzID, repo].\n"
-            "Outputs CSV rows of students that were added to stdout.\n"
+            "Outputs CSV rows of students that were removed to stdout.\n"
         )
     )
     parser.add_argument(
@@ -111,7 +88,7 @@ def main():
     )
     parser.add_argument(
         "repoids", nargs="*", default=[],
-        help="list of repo project IDs to add to"
+        help="list of repo project IDs to remove from"
     )
     args = parser.parse_args()
 
@@ -135,13 +112,13 @@ def main():
 
     # Authenticate the token.
     try:
-        gl = gitlab.Gitlab(config["server"], config["gitlab_token"], api_version=4)
+        gl = gitlab.Gitlab(config["server"], config["gitlab_token"], api_version="4")
         gl.auth()
     except:
         logging.error("invalid GitLab token")
         sys.exit(1)
 
-    add_users_to_repos(gl, args.repoids)
+    remove_users_from_repos(gl, args.repoids)
 
     # Print statistics of adding students to resource repo.
     if args.verbose:
