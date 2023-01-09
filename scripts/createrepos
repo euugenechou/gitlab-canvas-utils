@@ -147,11 +147,10 @@ def subgroup_search(user, group, path):
 
 def group_check(user, course):
     group = group_search(user, course)
-    group_name = course.upper()
 
     if not group:
         user.groups.create({
-            'name': group_name,
+            'name': course,
             'path': course,
         })
 
@@ -195,7 +194,9 @@ def course_check(user, course, subgroups):
     return group
 
 def parse_base_repo_path(path):
-    components = path.split("/")
+    # First component is the group, the rest are subgroups.
+    # We strip leading and trailing '/' characters for correctness.
+    components = path.strip("/").split("/")
     return (components[0], components[1:])
 
 def main():
