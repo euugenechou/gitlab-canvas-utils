@@ -97,7 +97,9 @@ template_repo = "https://git.ucsc.edu/euchou/cse13s-template.git"
   without a section subgroup: `cse13s/winter2023`.
 - `gitlab_server`: the GitLab server that you want to create the course group
   and student repos on.
-- `gitlab_token`: your GitLab token as a string. Your token should have API-level privilege.
+- `gitlab_token`: your GitLab token as a string. You can create a GitLab token by heading
+  to your account preferences, clicking on the access tokens tab on the left,
+  and creating a token with the API scope enabled.
 - `template_repo`: the template repository to import and use as a base for
   student repositories. Note that this template repository will need to be
   publically visible and *must* be supplied an HTTP URL, not SSH.
