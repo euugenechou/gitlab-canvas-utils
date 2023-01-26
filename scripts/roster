@@ -76,9 +76,9 @@ def main():
         help="range of CruzID to output (example: --range=start,end)"
     )
     parser.add_argument(
-        "-p", "--people", default="students",
+        "-g", "--group", default="students",
         choices=['students', 'instructors', 'all'],
-        help="specify group of people"
+        help="specify group of people to consider"
     )
     parser.add_argument(
         "-c", "--cruzid", default=False, action="store_true",
@@ -112,7 +112,7 @@ def main():
         base_gitlab_url,
         args.start,
         args.end,
-        args.people,
+        args.group,
         use_cruzid=args.cruzid
     )
 
