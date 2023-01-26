@@ -58,18 +58,18 @@ def add_user_to_repo(gl, repo, username, role):
         # then try to update the user's access.
         try:
             member = repo.members.all(query=username)[0]
-            if member.access_level != gitlab.REPORTER_ACCESS:
-                if member.access_level > gitlab.REPORTER_ACCESS:
-                    logging.warning(f"{username} has higher access than reporter for {name}.")
+            if member.access_level != roles[role]:
+                if member.access_level > roles[role]:
+                    logging.warning(f"{username} has higher access than {role} for {name}.")
                     return True
-                member.access_level = gitlab.REPORTER_ACCESS
+                member.access_level = roles[role]
                 member.save()
-                logging.info(f"{username} given reporter access for {name}.")
+                logging.info(f"{username} given {role} access for {name}.")
                 repo_ops["access_updated"] += 1
             else:
-                logging.info(f"{username} is already a reporter for {name}.")
+                logging.info(f"{username} already has {role} access for {name}.")
         except:
-            logging.error(f"{username} not given reporter access for {name}.")
+            logging.error(f"{username} not given {role} access for {name}.")
             repo_ops["error"] += 1
             return False
 
