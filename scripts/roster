@@ -3,14 +3,20 @@
 from canvasapi import Canvas
 import argparse, csv, toml, os, re, sys
 
-def create_student_csv(course, base_gitlab_url, start, end, all, use_cruzid=False):
+ROLE_MAPPINGS = {
+    "students": ['student'],
+    "instructors": ['ta', 'teacher'],
+    "all": ['student', 'ta', 'teacher', 'observer']
+}
+
+def create_student_csv(course, base_gitlab_url, start, end, people, use_cruzid=False):
     '''
     Writes the course student roster as a CSV file.
     Each row formatted as: [name, CanvasID, CruzID, repo].
     '''
     students = []
-    roles = ['student']
     states = ['active']
+    roles = ROLE_MAPPINGS[people]
 
     # These roles should grab everyone on the Canvas roster, not just students.
     if all:
@@ -70,8 +76,9 @@ def main():
         help="range of CruzID to output (example: --range=start,end)"
     )
     parser.add_argument(
-        "-a", "--all", default=False, action="store_true",
-        help="consider all roles when scraping the Canvas roster"
+        "-p", "--people", default="students",
+        choices=['students', 'instructors', 'all'],
+        help="specify group of people"
     )
     parser.add_argument(
         "-c", "--cruzid", default=False, action="store_true",
@@ -100,7 +107,14 @@ def main():
         idrange = args.range.split(',')
         args.start, args.end = idrange[0], idrange[1]
 
-    create_student_csv(canvas_course, base_gitlab_url, args.start, args.end, args.all, use_cruzid=args.cruzid)
+    create_student_csv(
+        canvas_course,
+        base_gitlab_url,
+        args.start,
+        args.end,
+        args.people,
+        use_cruzid=args.cruzid
+    )
 
 if __name__ == "__main__":
     main()
