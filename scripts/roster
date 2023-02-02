@@ -18,10 +18,6 @@ def create_student_csv(course, base_gitlab_url, start, end, people, use_cruzid=F
     states = ['active']
     roles = ROLE_MAPPINGS[people]
 
-    # These roles should grab everyone on the Canvas roster, not just students.
-    if all:
-        roles += ['ta', 'teacher', 'observer']
-
     # Use login ID instead of user ID to get email.
     # The regex match on cruzid should always succeed, provided a proper email.
     for user in course.get_users(enrollment_type=roles, enrollment_state=states):
